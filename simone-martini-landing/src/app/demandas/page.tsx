@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { Lock, Search, RefreshCw, Calendar, MapPin, MessageSquare, Phone } from "lucide-react";
+import { Lock, Search, RefreshCw, Calendar, MapPin, MessageSquare, Phone, Check, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type Demand = {
   id: string;
@@ -12,8 +13,153 @@ type Demand = {
   city: string;
   demand_text: string | null;
   observations: string | null;
+  status: string;
   created_at: string;
 };
+
+const STATUS_COLORS = {
+  "Aberto": "bg-slate-100 text-slate-700 border-slate-200",
+  "Em progresso": "bg-blue-50 text-blue-700 border-blue-200",
+  "Finalizado": "bg-emerald-50 text-emerald-700 border-emerald-200"
+} as const;
+
+function DemandRow({ 
+  demand, 
+  basicAuth 
+}: { 
+  demand: Demand; 
+  basicAuth: string;
+}) {
+  const [status, setStatus] = useState(demand.status || "Aberto");
+  const [obs, setObs] = useState(demand.observations || "");
+  const [savingStatus, setSavingStatus] = useState(false);
+  const [savingObs, setSavingObs] = useState(false);
+  const [obsChanged, setObsChanged] = useState(false);
+
+  const formatDate = (isoString: string) => {
+    const date = new Date(isoString);
+    return date.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newStatus = e.target.value;
+    setStatus(newStatus);
+    setSavingStatus(true);
+    try {
+      await fetch("https://ucezjskktvkhkmtqzdyc.supabase.co/functions/v1/update-demand", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Basic ${basicAuth}`
+        },
+        body: JSON.stringify({ id: demand.id, status: newStatus })
+      });
+    } catch (err) {
+      console.error("Erro ao atualizar status", err);
+    } finally {
+      setSavingStatus(false);
+    }
+  };
+
+  const handleSaveObs = async () => {
+    if (!obsChanged) return;
+    setSavingObs(true);
+    try {
+      await fetch("https://ucezjskktvkhkmtqzdyc.supabase.co/functions/v1/update-demand", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Basic ${basicAuth}`
+        },
+        body: JSON.stringify({ id: demand.id, observations: obs })
+      });
+      setObsChanged(false);
+    } catch (err) {
+      console.error("Erro ao atualizar observações", err);
+    } finally {
+      setSavingObs(false);
+    }
+  };
+
+  return (
+    <tr className="hover:bg-slate-50/50 transition-colors border-b border-slate-100 last:border-0">
+      <td className="p-4 align-top w-1/5">
+        <div className="font-medium text-slate-900 mb-1">{demand.full_name}</div>
+        <div className="flex items-center gap-1 text-sm text-brand-600 mb-2">
+          <Phone size={14} />
+          <a href={`https://wa.me/${demand.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+            {demand.whatsapp}
+          </a>
+        </div>
+        <div className="flex items-center gap-1 text-xs text-slate-500">
+          <MapPin size={14} className="text-slate-400" />
+          {demand.city}
+        </div>
+      </td>
+      
+      <td className="p-4 align-top w-1/5">
+        <div className="flex items-center gap-2">
+          <select 
+            value={status}
+            onChange={handleStatusChange}
+            disabled={savingStatus}
+            className={cn(
+              "text-sm rounded-full px-3 py-1 border outline-none cursor-pointer focus:ring-2 focus:ring-brand-500/20 disabled:opacity-50",
+              STATUS_COLORS[status as keyof typeof STATUS_COLORS] || STATUS_COLORS["Aberto"]
+            )}
+          >
+            <option value="Aberto">Aberto</option>
+            <option value="Em progresso">Em progresso</option>
+            <option value="Finalizado">Finalizado</option>
+          </select>
+          {savingStatus && <Loader2 size={14} className="animate-spin text-slate-400" />}
+        </div>
+        <div className="mt-4 flex items-center gap-1 text-xs text-slate-400">
+          <Calendar size={14} />
+          {formatDate(demand.created_at)}
+        </div>
+      </td>
+
+      <td className="p-4 align-top w-2/5">
+        {demand.demand_text ? (
+          <div className="text-slate-700 bg-slate-50 p-3 rounded-lg border border-slate-100 text-sm whitespace-pre-wrap">
+            {demand.demand_text}
+          </div>
+        ) : (
+          <span className="text-slate-400 italic text-sm">Sem mensagem do eleitor.</span>
+        )}
+      </td>
+
+      <td className="p-4 align-top w-1/5">
+        <div className="flex flex-col gap-2">
+          <textarea
+            value={obs}
+            onChange={(e) => {
+              setObs(e.target.value);
+              setObsChanged(true);
+            }}
+            placeholder="Anotações internas..."
+            className="w-full text-xs p-2 rounded border border-slate-200 bg-white focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400 outline-none resize-y min-h-[80px]"
+          />
+          <button 
+            onClick={handleSaveObs}
+            disabled={!obsChanged || savingObs}
+            className="self-end px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-semibold rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+          >
+            {savingObs ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
+            Salvar Obs.
+          </button>
+        </div>
+      </td>
+    </tr>
+  );
+}
 
 export default function DemandasDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -24,13 +170,14 @@ export default function DemandasDashboard() {
   const [demands, setDemands] = useState<Demand[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
 
+  const basicAuth = btoa(`${username}:${password}`);
+
   const handleLogin = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-      const basicAuth = btoa(`${username}:${password}`);
       const response = await fetch("https://ucezjskktvkhkmtqzdyc.supabase.co/functions/v1/get-demands", {
         headers: {
           "Authorization": `Basic ${basicAuth}`,
@@ -63,22 +210,11 @@ export default function DemandasDashboard() {
       (d.demand_text && d.demand_text.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const formatDate = (isoString: string) => {
-    const date = new Date(isoString);
-    return date.toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   return (
     <main className="flex min-h-screen flex-col bg-slate-50">
       <Header />
 
-      <div className="flex-1 container mx-auto px-4 md:px-6 py-32 max-w-6xl">
+      <div className="flex-1 container mx-auto px-4 md:px-6 py-32 max-w-7xl">
         
         {!isAuthenticated ? (
           <div className="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-sm border border-slate-100 mt-12">
@@ -135,7 +271,7 @@ export default function DemandasDashboard() {
               <div>
                 <h1 className="text-3xl font-bold text-slate-900">Painel de Demandas</h1>
                 <p className="text-slate-500 mt-1">
-                  Gerencie e acompanhe as solicitações dos apoiadores.
+                  Gerencie o status e adicione anotações internas.
                 </p>
               </div>
               <div className="flex items-center gap-4 w-full md:w-auto">
@@ -143,10 +279,10 @@ export default function DemandasDashboard() {
                   <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
                     type="text"
-                    placeholder="Buscar por nome ou cidade..."
+                    placeholder="Buscar apoiador..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-brand-500/20 outline-none"
+                    className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-brand-500/20 outline-none text-sm"
                   />
                 </div>
                 <button
@@ -161,13 +297,13 @@ export default function DemandasDashboard() {
 
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <table className="w-full text-left border-collapse min-w-[800px]">
                   <thead>
-                    <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 text-sm uppercase tracking-wider">
-                      <th className="p-4 font-semibold">Contato</th>
-                      <th className="p-4 font-semibold">Localização</th>
-                      <th className="p-4 font-semibold">Demanda</th>
-                      <th className="p-4 font-semibold">Data</th>
+                    <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 text-xs uppercase tracking-wider">
+                      <th className="p-4 font-semibold">Contato & Local</th>
+                      <th className="p-4 font-semibold">Status & Data</th>
+                      <th className="p-4 font-semibold">Demanda do Eleitor</th>
+                      <th className="p-4 font-semibold">Observações (Interno)</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -179,44 +315,7 @@ export default function DemandasDashboard() {
                       </tr>
                     ) : (
                       filteredDemands.map((demand) => (
-                        <tr key={demand.id} className="hover:bg-slate-50/50 transition-colors">
-                          <td className="p-4 align-top">
-                            <div className="font-medium text-slate-900 mb-1">{demand.full_name}</div>
-                            <div className="flex items-center gap-1 text-sm text-brand-600">
-                              <Phone size={14} />
-                              <a href={`https://wa.me/${demand.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                                {demand.whatsapp}
-                              </a>
-                            </div>
-                          </td>
-                          <td className="p-4 align-top">
-                            <div className="flex items-center gap-1 text-slate-600">
-                              <MapPin size={16} className="text-slate-400" />
-                              {demand.city}
-                            </div>
-                          </td>
-                          <td className="p-4 align-top max-w-md">
-                            {demand.demand_text ? (
-                              <div className="text-slate-700 bg-slate-50 p-3 rounded-lg border border-slate-100 text-sm whitespace-pre-wrap">
-                                {demand.demand_text}
-                              </div>
-                            ) : (
-                              <span className="text-slate-400 italic text-sm">Sem mensagem</span>
-                            )}
-                            {demand.observations && (
-                              <div className="mt-2 text-xs text-amber-600 bg-amber-50 p-2 rounded border border-amber-100 flex items-start gap-1">
-                                <MessageSquare size={14} className="shrink-0 mt-0.5" />
-                                <span>{demand.observations}</span>
-                              </div>
-                            )}
-                          </td>
-                          <td className="p-4 align-top text-sm text-slate-500 whitespace-nowrap">
-                            <div className="flex items-center gap-1">
-                              <Calendar size={14} />
-                              {formatDate(demand.created_at)}
-                            </div>
-                          </td>
-                        </tr>
+                        <DemandRow key={demand.id} demand={demand} basicAuth={basicAuth} />
                       ))
                     )}
                   </tbody>
