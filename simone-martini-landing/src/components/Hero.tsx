@@ -69,17 +69,6 @@ export function Hero() {
                 <p className="text-white/80 text-sm">Sempre ao seu lado.</p>
               </div>
             </div>
-            
-            {/* Floating Badge */}
-            <div className="absolute top-1/4 -left-6 md:-left-12 bg-white p-4 rounded-2xl shadow-xl shadow-slate-200/50 flex items-center gap-4 animate-bounce-slow">
-              <div className="w-12 h-12 rounded-full bg-accent-500/20 text-accent-600 flex items-center justify-center">
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path></svg>
-              </div>
-              <div>
-                <p className="text-sm font-bold text-slate-900">Ficha Limpa</p>
-                <p className="text-xs text-slate-500">Compromisso total</p>
-              </div>
-            </div>
           </motion.div>
         </div>
       </div>

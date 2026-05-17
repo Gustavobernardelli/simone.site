@@ -64,13 +64,6 @@ export function About() {
               ))}
             </ul>
 
-            <a 
-              href="#proposals"
-              className="inline-flex items-center gap-2 text-brand-700 font-semibold hover:text-brand-800 transition-colors group"
-            >
-              Conheça as propostas detalhadas
-              <span className="transform transition-transform group-hover:translate-x-1">→</span>
-            </a>
           </motion.div>
 
         </div>

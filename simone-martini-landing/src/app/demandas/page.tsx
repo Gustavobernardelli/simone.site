@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { Lock, Search, RefreshCw, Calendar, MapPin, MessageSquare, Phone, Check, Loader2 } from "lucide-react";
+import { Lock, Search, RefreshCw, Calendar, MapPin, Phone, Eye, X, Check, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Demand = {
@@ -23,144 +23,6 @@ const STATUS_COLORS = {
   "Finalizado": "bg-emerald-50 text-emerald-700 border-emerald-200"
 } as const;
 
-function DemandRow({ 
-  demand, 
-  basicAuth 
-}: { 
-  demand: Demand; 
-  basicAuth: string;
-}) {
-  const [status, setStatus] = useState(demand.status || "Aberto");
-  const [obs, setObs] = useState(demand.observations || "");
-  const [savingStatus, setSavingStatus] = useState(false);
-  const [savingObs, setSavingObs] = useState(false);
-  const [obsChanged, setObsChanged] = useState(false);
-
-  const formatDate = (isoString: string) => {
-    const date = new Date(isoString);
-    return date.toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newStatus = e.target.value;
-    setStatus(newStatus);
-    setSavingStatus(true);
-    try {
-      await fetch("https://ucezjskktvkhkmtqzdyc.supabase.co/functions/v1/update-demand", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Basic ${basicAuth}`
-        },
-        body: JSON.stringify({ id: demand.id, status: newStatus })
-      });
-    } catch (err) {
-      console.error("Erro ao atualizar status", err);
-    } finally {
-      setSavingStatus(false);
-    }
-  };
-
-  const handleSaveObs = async () => {
-    if (!obsChanged) return;
-    setSavingObs(true);
-    try {
-      await fetch("https://ucezjskktvkhkmtqzdyc.supabase.co/functions/v1/update-demand", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Basic ${basicAuth}`
-        },
-        body: JSON.stringify({ id: demand.id, observations: obs })
-      });
-      setObsChanged(false);
-    } catch (err) {
-      console.error("Erro ao atualizar observações", err);
-    } finally {
-      setSavingObs(false);
-    }
-  };
-
-  return (
-    <tr className="hover:bg-slate-50/50 transition-colors border-b border-slate-100 last:border-0">
-      <td className="p-4 align-top w-1/5">
-        <div className="font-medium text-slate-900 mb-1">{demand.full_name}</div>
-        <div className="flex items-center gap-1 text-sm text-brand-600 mb-2">
-          <Phone size={14} />
-          <a href={`https://wa.me/${demand.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
-            {demand.whatsapp}
-          </a>
-        </div>
-        <div className="flex items-center gap-1 text-xs text-slate-500">
-          <MapPin size={14} className="text-slate-400" />
-          {demand.city}
-        </div>
-      </td>
-      
-      <td className="p-4 align-top w-1/5">
-        <div className="flex items-center gap-2">
-          <select 
-            value={status}
-            onChange={handleStatusChange}
-            disabled={savingStatus}
-            className={cn(
-              "text-sm rounded-full px-3 py-1 border outline-none cursor-pointer focus:ring-2 focus:ring-brand-500/20 disabled:opacity-50",
-              STATUS_COLORS[status as keyof typeof STATUS_COLORS] || STATUS_COLORS["Aberto"]
-            )}
-          >
-            <option value="Aberto">Aberto</option>
-            <option value="Em progresso">Em progresso</option>
-            <option value="Finalizado">Finalizado</option>
-          </select>
-          {savingStatus && <Loader2 size={14} className="animate-spin text-slate-400" />}
-        </div>
-        <div className="mt-4 flex items-center gap-1 text-xs text-slate-400">
-          <Calendar size={14} />
-          {formatDate(demand.created_at)}
-        </div>
-      </td>
-
-      <td className="p-4 align-top w-2/5">
-        {demand.demand_text ? (
-          <div className="text-slate-700 bg-slate-50 p-3 rounded-lg border border-slate-100 text-sm whitespace-pre-wrap">
-            {demand.demand_text}
-          </div>
-        ) : (
-          <span className="text-slate-400 italic text-sm">Sem mensagem do eleitor.</span>
-        )}
-      </td>
-
-      <td className="p-4 align-top w-1/5">
-        <div className="flex flex-col gap-2">
-          <textarea
-            value={obs}
-            onChange={(e) => {
-              setObs(e.target.value);
-              setObsChanged(true);
-            }}
-            placeholder="Anotações internas..."
-            className="w-full text-xs p-2 rounded border border-slate-200 bg-white focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400 outline-none resize-y min-h-[80px]"
-          />
-          <button 
-            onClick={handleSaveObs}
-            disabled={!obsChanged || savingObs}
-            className="self-end px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-semibold rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
-          >
-            {savingObs ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
-            Salvar Obs.
-          </button>
-        </div>
-      </td>
-    </tr>
-  );
-}
-
 export default function DemandasDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState("");
@@ -169,6 +31,12 @@ export default function DemandasDashboard() {
   const [error, setError] = useState("");
   const [demands, setDemands] = useState<Demand[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+
+  // Modal State
+  const [selectedDemand, setSelectedDemand] = useState<Demand | null>(null);
+  const [modalStatus, setModalStatus] = useState("Aberto");
+  const [modalObs, setModalObs] = useState("");
+  const [savingModal, setSavingModal] = useState(false);
 
   const basicAuth = btoa(`${username}:${password}`);
 
@@ -203,12 +71,67 @@ export default function DemandasDashboard() {
     handleLogin();
   };
 
+  const openModal = (demand: Demand) => {
+    setSelectedDemand(demand);
+    setModalStatus(demand.status || "Aberto");
+    setModalObs(demand.observations || "");
+  };
+
+  const closeModal = () => {
+    setSelectedDemand(null);
+  };
+
+  const saveModal = async () => {
+    if (!selectedDemand) return;
+    setSavingModal(true);
+
+    try {
+      await fetch("https://ucezjskktvkhkmtqzdyc.supabase.co/functions/v1/update-demand", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Basic ${basicAuth}`
+        },
+        body: JSON.stringify({ 
+          id: selectedDemand.id, 
+          status: modalStatus,
+          observations: modalObs
+        })
+      });
+
+      // Update local state to reflect changes immediately
+      setDemands(demands.map(d => 
+        d.id === selectedDemand.id 
+          ? { ...d, status: modalStatus, observations: modalObs } 
+          : d
+      ));
+      
+      closeModal();
+    } catch (err) {
+      console.error("Erro ao atualizar", err);
+      alert("Ocorreu um erro ao salvar as alterações.");
+    } finally {
+      setSavingModal(false);
+    }
+  };
+
   const filteredDemands = demands.filter(
     (d) =>
       d.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       d.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (d.demand_text && d.demand_text.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+
+  const formatDate = (isoString: string) => {
+    const date = new Date(isoString);
+    return date.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   return (
     <main className="flex min-h-screen flex-col bg-slate-50">
@@ -218,6 +141,7 @@ export default function DemandasDashboard() {
         
         {!isAuthenticated ? (
           <div className="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-sm border border-slate-100 mt-12">
+            {/* ... login form (unchanged) ... */}
             <div className="flex flex-col items-center text-center mb-8">
               <div className="w-16 h-16 bg-brand-50 rounded-full flex items-center justify-center mb-4 text-brand-600">
                 <Lock size={32} />
@@ -295,27 +219,67 @@ export default function DemandasDashboard() {
               </div>
             </div>
 
+            {/* Table */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[800px]">
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 text-xs uppercase tracking-wider">
-                      <th className="p-4 font-semibold">Contato & Local</th>
-                      <th className="p-4 font-semibold">Status & Data</th>
-                      <th className="p-4 font-semibold">Demanda do Eleitor</th>
-                      <th className="p-4 font-semibold">Observações (Interno)</th>
+                      <th className="p-4 font-semibold">Nome</th>
+                      <th className="p-4 font-semibold">Telefone</th>
+                      <th className="p-4 font-semibold">Cidade</th>
+                      <th className="p-4 font-semibold">Data</th>
+                      <th className="p-4 font-semibold">Status</th>
+                      <th className="p-4 font-semibold text-center">Visualizar</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {filteredDemands.length === 0 ? (
                       <tr>
-                        <td colSpan={4} className="p-8 text-center text-slate-500">
+                        <td colSpan={6} className="p-8 text-center text-slate-500">
                           Nenhuma demanda encontrada.
                         </td>
                       </tr>
                     ) : (
                       filteredDemands.map((demand) => (
-                        <DemandRow key={demand.id} demand={demand} basicAuth={basicAuth} />
+                        <tr key={demand.id} className="hover:bg-slate-50/50 transition-colors">
+                          <td className="p-4 font-medium text-slate-900">{demand.full_name}</td>
+                          <td className="p-4 text-slate-600">
+                            <a href={`https://wa.me/${demand.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-brand-600 transition-colors">
+                              <Phone size={14} />
+                              {demand.whatsapp}
+                            </a>
+                          </td>
+                          <td className="p-4 text-slate-600">
+                            <div className="flex items-center gap-1">
+                              <MapPin size={14} className="text-slate-400" />
+                              {demand.city}
+                            </div>
+                          </td>
+                          <td className="p-4 text-slate-500 text-sm whitespace-nowrap">
+                            <div className="flex items-center gap-1">
+                              <Calendar size={14} className="text-slate-400" />
+                              {formatDate(demand.created_at).split(',')[0]}
+                            </div>
+                          </td>
+                          <td className="p-4">
+                            <span className={cn(
+                              "text-xs font-medium rounded-full px-2.5 py-1 border",
+                              STATUS_COLORS[demand.status as keyof typeof STATUS_COLORS] || STATUS_COLORS["Aberto"]
+                            )}>
+                              {demand.status || "Aberto"}
+                            </span>
+                          </td>
+                          <td className="p-4 text-center">
+                            <button
+                              onClick={() => openModal(demand)}
+                              className="p-2 bg-slate-100 hover:bg-brand-100 text-slate-600 hover:text-brand-700 rounded-lg transition-colors inline-flex"
+                              title="Visualizar demanda"
+                            >
+                              <Eye size={18} />
+                            </button>
+                          </td>
+                        </tr>
                       ))
                     )}
                   </tbody>
@@ -325,6 +289,135 @@ export default function DemandasDashboard() {
           </div>
         )}
       </div>
+
+      {/* Modal */}
+      {selectedDemand && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-[95vw] xl:max-w-[1400px] h-[85vh] flex flex-col animate-in zoom-in-95 duration-200">
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-slate-100">
+              <h2 className="text-xl font-bold text-slate-900">Detalhes da Demanda</h2>
+              
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <label className="text-sm font-semibold text-slate-600">Status:</label>
+                  <select 
+                    value={modalStatus}
+                    onChange={(e) => setModalStatus(e.target.value)}
+                    className={cn(
+                      "text-sm font-medium rounded-full px-3 py-1.5 border outline-none cursor-pointer focus:ring-2 focus:ring-brand-500/20",
+                      STATUS_COLORS[modalStatus as keyof typeof STATUS_COLORS] || STATUS_COLORS["Aberto"]
+                    )}
+                  >
+                    <option value="Aberto">Aberto</option>
+                    <option value="Em progresso">Em progresso</option>
+                    <option value="Finalizado">Finalizado</option>
+                  </select>
+                </div>
+                <button onClick={closeModal} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors">
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr_1fr] gap-8 h-full">
+                
+                {/* Column 1: Basic Info */}
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-sm font-bold tracking-widest text-brand-700 uppercase mb-4 border-b border-slate-100 pb-2">Informações</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-xs text-slate-500 mb-1">Nome Completo</p>
+                        <p className="font-semibold text-slate-900">{selectedDemand.full_name}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-slate-500 mb-1">WhatsApp</p>
+                        <a href={`https://wa.me/${selectedDemand.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="font-semibold text-brand-600 hover:underline flex items-center gap-1">
+                          <Phone size={14} />
+                          {selectedDemand.whatsapp}
+                        </a>
+                      </div>
+                      <div>
+                        <p className="text-xs text-slate-500 mb-1">Cidade</p>
+                        <p className="font-semibold text-slate-900 flex items-center gap-1">
+                          <MapPin size={14} className="text-slate-400" />
+                          {selectedDemand.city}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-slate-500 mb-1">Data de Envio</p>
+                        <p className="font-semibold text-slate-900 flex items-center gap-1">
+                          <Calendar size={14} className="text-slate-400" />
+                          {formatDate(selectedDemand.created_at)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Column 2: Demand Text */}
+                <div className="md:border-l md:border-r border-slate-100 md:px-8">
+                  <h3 className="text-sm font-bold tracking-widest text-brand-700 uppercase mb-4 border-b border-slate-100 pb-2">Demanda do Eleitor</h3>
+                  {selectedDemand.demand_text ? (
+                    <div className="text-slate-700 text-sm whitespace-pre-wrap leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-100">
+                      {selectedDemand.demand_text}
+                    </div>
+                  ) : (
+                    <div className="text-slate-400 italic text-sm text-center py-8 bg-slate-50 rounded-xl border border-slate-100 border-dashed">
+                      O eleitor não enviou nenhuma mensagem escrita.
+                    </div>
+                  )}
+                </div>
+
+                {/* Column 3: Observations (Editable) */}
+                <div className="flex flex-col h-full">
+                  <h3 className="text-sm font-bold tracking-widest text-brand-700 uppercase mb-4 border-b border-slate-100 pb-2">Anotações (Interno)</h3>
+                  <textarea
+                    value={modalObs}
+                    onChange={(e) => setModalObs(e.target.value)}
+                    placeholder="Escreva aqui anotações internas da equipe sobre essa demanda..."
+                    className="flex-1 w-full p-4 rounded-xl border border-amber-200 bg-amber-50 focus:bg-white transition-colors outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400 text-sm text-slate-700 min-h-[200px]"
+                  />
+                </div>
+
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-6 border-t border-slate-100 bg-slate-50 rounded-b-2xl flex justify-end gap-3">
+              <button 
+                onClick={closeModal}
+                className="px-6 py-2.5 rounded-lg font-semibold text-slate-600 hover:bg-slate-200 transition-colors"
+                disabled={savingModal}
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={saveModal}
+                disabled={savingModal}
+                className="px-8 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
+              >
+                {savingModal ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" />
+                    Salvando...
+                  </>
+                ) : (
+                  <>
+                    <Check size={18} />
+                    Salvar Alterações
+                  </>
+                )}
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
       <Footer />
     </main>
