@@ -45,19 +45,25 @@ export default function LiderancasPage() {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    setValue,
   } = useForm<FormValues>();
 
-  const handleTelefoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, "");
-    if (value.length > 11) value = value.slice(0, 11);
+  const formatTelefone = (input: string) => {
+    let digits = input.replace(/\D/g, "");
+    if (digits.length > 11) digits = digits.slice(0, 11);
 
-    if (value.length > 2) {
-      value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
+    if (digits.length <= 2) return digits.length ? `(${digits}` : "";
+    if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    if (digits.length <= 10) {
+      return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
     }
-    if (value.length > 10) {
-      value = `${value.slice(0, 10)}-${value.slice(10)}`;
-    }
-    e.target.value = value;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  };
+
+  const handleTelefoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatTelefone(e.target.value);
+    e.target.value = formatted;
+    setValue("telefone", formatted, { shouldValidate: true });
   };
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,13 +105,33 @@ export default function LiderancasPage() {
     formData.append("responsavel", data.responsavel);
     if (imageFile) formData.append("imagem", imageFile);
 
-    // TODO: conectar à API/Supabase quando disponível
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    try {
+      const response = await fetch(
+        "https://ucezjskktvkhkmtqzdyc.supabase.co/functions/v1/submit-lideranca",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
-    reset();
-    clearImage();
-    setIsSubmitted(true);
-    setTimeout(() => setIsSubmitted(false), 5000);
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Falha ao salvar os dados");
+      }
+
+      reset();
+      clearImage();
+      setIsSubmitted(true);
+      setTimeout(() => setIsSubmitted(false), 5000);
+    } catch (error) {
+      console.error("Erro no envio:", error);
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Ocorreu um erro ao salvar. Tente novamente."
+      );
+    }
   };
 
   return (
@@ -151,7 +177,13 @@ export default function LiderancasPage() {
                 {...register("telefone", {
                   required: "O telefone é obrigatório",
                   onChange: handleTelefoneChange,
-                  minLength: { value: 14, message: "Telefone inválido" },
+                  validate: (value) => {
+                    const digits = value.replace(/\D/g, "");
+                    return (
+                      (digits.length === 10 || digits.length === 11) ||
+                      "Telefone inválido"
+                    );
+                  },
                 })}
               />
               {errors.telefone && (
