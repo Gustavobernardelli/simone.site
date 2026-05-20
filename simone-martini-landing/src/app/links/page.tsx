@@ -7,7 +7,7 @@ const links = [
     alt: "Enviar Demanda",
   },
   {
-    image: "https://ucezjskktvkhkmtqzdyc.supabase.co/storage/v1/object/public/Arquivos/Imagens/link1.png",
+    image: "https://ucezjskktvkhkmtqzdyc.supabase.co/storage/v1/object/public/Arquivos/Imagens/link2.png",
     href: "/",
     alt: "Site Oficial",
   },
@@ -22,7 +22,7 @@ const links = [
     alt: "Fale Conosco",
   },
   {
-    image: "https://ucezjskktvkhkmtqzdyc.supabase.co/storage/v1/object/public/Arquivos/Imagens/link4.png",
+    image: "https://ucezjskktvkhkmtqzdyc.supabase.co/storage/v1/object/public/Arquivos/Imagens/link5.png",
     href: "#",
     alt: "Link 5",
   },
