@@ -71,14 +71,12 @@ export default function LinksPage() {
               rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
               className="w-[90%] block rounded-2xl overflow-hidden shadow-lg transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]"
             >
-              <div className="w-full" style={{ aspectRatio: "4 / 1" }}>
-                <img
-                  src={link.image}
-                  alt={link.alt}
-                  className="w-full h-full object-cover block"
-                  draggable={false}
-                />
-              </div>
+              <img
+                src={link.image}
+                alt={link.alt}
+                className="w-full h-auto block"
+                draggable={false}
+              />
             </a>
           ))}
         </div>
