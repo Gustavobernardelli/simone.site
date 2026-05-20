@@ -62,21 +62,23 @@ export default function LinksPage() {
         </div>
 
         {/* Image links */}
-        <div className="w-full flex flex-col gap-4">
+        <div className="w-full flex flex-col gap-4 items-center">
           {links.map((link) => (
             <a
               key={link.alt}
               href={link.href}
               target={link.href.startsWith("http") ? "_blank" : undefined}
               rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
-              className="w-full block rounded-2xl overflow-hidden shadow-lg transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]"
+              className="w-[90%] block rounded-2xl overflow-hidden shadow-lg transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]"
             >
-              <img
-                src={link.image}
-                alt={link.alt}
-                className="w-full h-auto block"
-                draggable={false}
-              />
+              <div className="w-full" style={{ aspectRatio: "4 / 1" }}>
+                <img
+                  src={link.image}
+                  alt={link.alt}
+                  className="w-full h-full object-cover block"
+                  draggable={false}
+                />
+              </div>
             </a>
           ))}
         </div>
