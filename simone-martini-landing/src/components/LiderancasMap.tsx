@@ -20,7 +20,7 @@ type LiderancasMapProps = {
 
 const MAP_CONTAINER_STYLE = { width: "100%", height: "100%", minHeight: "420px" };
 const DEFAULT_CENTER = { lat: -23.42, lng: -51.94 };
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
+const GOOGLE_MAPS_API_KEY = "AIzaSyCk1iO0inZ5wYLIuHo3Jx-ZOcJ2hoevOGU";
 
 export function LiderancasMap({ markers, selectedId, onMarkerClick, loading }: LiderancasMapProps) {
   const { isLoaded } = useJsApiLoader({
@@ -105,8 +105,8 @@ export function LiderancasMap({ markers, selectedId, onMarkerClick, loading }: L
               icon={{
                 url:
                   selectedId === m.id
-                    ? "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
-                    : "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                    ? "https://maps.google.com/mapfiles/ms/icons/red-dot.png"
+                    : "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
               }}
             >
               {openInfoId === m.id && (
