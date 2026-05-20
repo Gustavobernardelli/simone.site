@@ -27,18 +27,17 @@ export function Header() {
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         isScrolled
-          ? "bg-white/80 backdrop-blur-md shadow-sm py-4"
-          : "bg-transparent py-6"
+          ? "bg-slate-950/90 backdrop-blur-md shadow-sm border-b border-white/5 py-1"
+          : "bg-transparent py-2"
       )}
     >
       <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
         <a href="#" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 rounded-full bg-brand-700 text-white flex items-center justify-center font-bold text-xl group-hover:bg-brand-600 transition-colors">
-            SM
-          </div>
-          <span className="font-bold text-xl md:text-2xl text-slate-900 tracking-tight">
-            Simone <span className="text-brand-700">Martini</span>
-          </span>
+          <img
+            src="https://ucezjskktvkhkmtqzdyc.supabase.co/storage/v1/object/public/Arquivos/Imagens/logo%20branca.png"
+            alt="Simone Martini"
+            className="h-[75px] md:h-[90px] w-auto object-contain transition-transform duration-300 group-hover:scale-105 -ml-[18px] md:-ml-[22px] -my-[15px] md:-my-[20px]"
+          />
         </a>
 
         {/* Desktop Nav */}
@@ -47,14 +46,14 @@ export function Header() {
             <a
               key={link.name}
               href={link.href}
-              className="text-sm font-medium text-slate-700 hover:text-brand-600 transition-colors"
+              className="text-sm font-medium text-white/90 hover:text-amber-400 transition-colors duration-300"
             >
               {link.name}
             </a>
           ))}
           <a
             href="#support"
-            className="px-6 py-2.5 bg-brand-700 text-white text-sm font-semibold rounded-full hover:bg-brand-600 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5"
+            className="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 text-sm font-bold rounded-full hover:from-amber-600 hover:to-amber-700 shadow-md hover:shadow-lg hover:shadow-amber-500/20 transition-all transform hover:-translate-y-0.5 duration-300"
           >
             Enviar demanda
           </a>
@@ -62,7 +61,7 @@ export function Header() {
 
         {/* Mobile Menu Toggle */}
         <button
-          className="md:hidden p-2 text-slate-700"
+          className="md:hidden p-2 text-white transition-colors duration-300"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label="Toggle Menu"
         >
@@ -72,12 +71,12 @@ export function Header() {
 
       {/* Mobile Nav */}
       {isMobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg py-4 px-4 flex flex-col gap-4 border-t border-slate-100 animate-in slide-in-from-top-2">
+        <div className="md:hidden absolute top-full left-0 right-0 bg-slate-950/95 backdrop-blur-md shadow-lg py-4 px-4 flex flex-col gap-4 border-t border-white/5 animate-in slide-in-from-top-2">
           {navLinks.map((link) => (
             <a
               key={link.name}
               href={link.href}
-              className="text-base font-medium text-slate-700 p-2 hover:bg-slate-50 rounded-md"
+              className="text-base font-medium text-white/90 p-2 hover:bg-white/5 hover:text-amber-400 rounded-md transition-colors"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               {link.name}
@@ -85,7 +84,7 @@ export function Header() {
           ))}
           <a
             href="#support"
-            className="w-full text-center px-6 py-3 bg-brand-700 text-white text-base font-semibold rounded-md hover:bg-brand-600 mt-2"
+            className="w-full text-center px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 text-base font-bold rounded-md hover:from-amber-600 hover:to-amber-700 mt-2 transition-all shadow-md active:scale-95"
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Enviar demanda
