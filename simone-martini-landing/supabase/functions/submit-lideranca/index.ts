@@ -9,7 +9,7 @@ const corsHeaders = {
 const BUCKET = "Arquivos"
 const FOLDER = "liderancas"
 
-const POTENCIAL_VALIDOS = ["30-50", "50-80", "80-120", "120+"]
+const POTENCIAL_VALIDOS = ["solo", "familiar", "30-50", "50-80", "80-120", "120+"]
 const SITUACAO_VALIDAS = [
   "Fechado com Simone",
   "Em conversa",
@@ -57,14 +57,16 @@ serve(async (req) => {
 
     const nome = (formData.get("nome") as string)?.trim()
     const telefone = (formData.get("telefone") as string)?.trim()
-    const endereco = (formData.get("endereco") as string)?.trim()
+    const rua = (formData.get("rua") as string)?.trim()
+    const numero = (formData.get("numero") as string)?.trim()
+    const cidade = (formData.get("cidade") as string)?.trim()
     const descricao = (formData.get("descricao") as string)?.trim()
     const potencialInfluencia = (formData.get("potencialInfluencia") as string)?.trim()
     const situacao = (formData.get("situacao") as string)?.trim()
     const responsavel = ((formData.get("responsavel") as string) || "").trim() || null
     const imagem = formData.get("imagem")
 
-    if (!nome || !telefone || !endereco || !descricao || !potencialInfluencia || !situacao) {
+    if (!nome || !telefone || !rua || !numero || !cidade || !descricao || !potencialInfluencia || !situacao) {
       return new Response(
         JSON.stringify({ error: "Preencha todos os campos obrigatórios." }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
@@ -84,6 +86,9 @@ serve(async (req) => {
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
       )
     }
+
+    // Compose full address for backward compatibility and geocoding
+    const endereco = `${rua}, ${numero}, ${cidade}`
 
     let imagemUrl: string | null = null
 
@@ -118,7 +123,6 @@ serve(async (req) => {
       imagemUrl = publicUrlData.publicUrl
     }
 
-    // Geocodificar o endereço com Google Maps antes de inserir
     const googleApiKey = Deno.env.get("GOOGLE_MAPS_API_KEY") ?? ""
     const coords = googleApiKey ? await geocodeEndereco(endereco, googleApiKey) : null
 
@@ -128,6 +132,9 @@ serve(async (req) => {
         {
           nome,
           telefone,
+          rua,
+          numero,
+          cidade,
           endereco,
           descricao,
           potencial_influencia: potencialInfluencia,

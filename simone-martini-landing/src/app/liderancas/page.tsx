@@ -6,6 +6,8 @@ import { CheckCircle, ImagePlus, Save, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const POTENCIAL_OPCOES = [
+  { value: "solo", label: "Apoiador solo" },
+  { value: "familiar", label: "Núcleo familiar" },
   { value: "30-50", label: "30 - 50 pessoas" },
   { value: "50-80", label: "50 - 80 pessoas" },
   { value: "80-120", label: "80 - 120 pessoas" },
@@ -21,7 +23,9 @@ const SITUACAO_OPCOES = [
 type FormValues = {
   nome: string;
   telefone: string;
-  endereco: string;
+  cidade: string;
+  rua: string;
+  numero: string;
   descricao: string;
   potencialInfluencia: string;
   situacao: string;
@@ -98,7 +102,9 @@ export default function LiderancasPage() {
     const formData = new FormData();
     formData.append("nome", data.nome);
     formData.append("telefone", data.telefone);
-    formData.append("endereco", data.endereco);
+    formData.append("cidade", data.cidade);
+    formData.append("rua", data.rua);
+    formData.append("numero", data.numero);
     formData.append("descricao", data.descricao);
     formData.append("potencialInfluencia", data.potencialInfluencia);
     formData.append("situacao", data.situacao);
@@ -191,20 +197,62 @@ export default function LiderancasPage() {
               )}
             </div>
 
+            {/* Endereço separado em Cidade / Rua / Número */}
             <div>
-              <label htmlFor="endereco" className="block text-sm font-semibold text-slate-700 mb-2">
+              <span className="block text-sm font-semibold text-slate-700 mb-3">
                 Endereço *
-              </label>
-              <input
-                id="endereco"
-                type="text"
-                placeholder="Rua, número, bairro, cidade"
-                className={inputClass(!!errors.endereco)}
-                {...register("endereco", { required: "O endereço é obrigatório" })}
-              />
-              {errors.endereco && (
-                <p className="text-red-500 text-xs mt-1">{errors.endereco.message}</p>
-              )}
+              </span>
+              <div className="space-y-3">
+                <div>
+                  <label htmlFor="cidade" className="block text-xs text-slate-500 mb-1">
+                    Cidade
+                  </label>
+                  <input
+                    id="cidade"
+                    type="text"
+                    placeholder="Ex: Londrina"
+                    className={inputClass(!!errors.cidade)}
+                    {...register("cidade", { required: "A cidade é obrigatória" })}
+                  />
+                  {errors.cidade && (
+                    <p className="text-red-500 text-xs mt-1">{errors.cidade.message}</p>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="col-span-2">
+                    <label htmlFor="rua" className="block text-xs text-slate-500 mb-1">
+                      Rua / Avenida
+                    </label>
+                    <input
+                      id="rua"
+                      type="text"
+                      placeholder="Ex: Rua das Flores"
+                      className={inputClass(!!errors.rua)}
+                      {...register("rua", { required: "A rua é obrigatória" })}
+                    />
+                    {errors.rua && (
+                      <p className="text-red-500 text-xs mt-1">{errors.rua.message}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label htmlFor="numero" className="block text-xs text-slate-500 mb-1">
+                      Número
+                    </label>
+                    <input
+                      id="numero"
+                      type="text"
+                      placeholder="Ex: 123"
+                      className={inputClass(!!errors.numero)}
+                      {...register("numero", { required: "O número é obrigatório" })}
+                    />
+                    {errors.numero && (
+                      <p className="text-red-500 text-xs mt-1">{errors.numero.message}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div>

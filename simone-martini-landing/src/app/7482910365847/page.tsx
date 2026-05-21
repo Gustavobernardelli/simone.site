@@ -22,8 +22,8 @@ import {
   Phone,
   Eye,
   X,
-  Users,
   ImageIcon,
+  Trash2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -31,6 +31,9 @@ type Lideranca = {
   id: string;
   nome: string;
   telefone: string;
+  cidade: string | null;
+  rua: string | null;
+  numero: string | null;
   endereco: string;
   descricao: string;
   potencial_influencia: string;
@@ -43,6 +46,8 @@ type Lideranca = {
 };
 
 const POTENCIAL_LABELS: Record<string, string> = {
+  "solo": "Apoiador solo",
+  "familiar": "Núcleo familiar",
   "30-50": "30 - 50 pessoas",
   "50-80": "50 - 80 pessoas",
   "80-120": "80 - 120 pessoas",
@@ -59,6 +64,7 @@ export default function PainelLiderancasPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [authToken, setAuthToken] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [liderancas, setLiderancas] = useState<Lideranca[]>([]);
@@ -67,19 +73,20 @@ export default function PainelLiderancasPage() {
   const [mapMarkers, setMapMarkers] = useState<LiderancaMarker[]>([]);
   const [mapLoading, setMapLoading] = useState(false);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
-
-  const basicAuth = btoa(`${username}:${password}`);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const handleLogin = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setLoading(true);
     setError("");
 
+    const token = btoa(`${username}:${password}`);
+
     try {
       const response = await fetch(
         "https://ucezjskktvkhkmtqzdyc.supabase.co/functions/v1/get-liderancas",
         {
-          headers: { Authorization: `Basic ${basicAuth}` },
+          headers: { Authorization: `Basic ${token}` },
         }
       );
 
@@ -89,6 +96,7 @@ export default function PainelLiderancasPage() {
         throw new Error(result.error || "Erro ao autenticar");
       }
 
+      setAuthToken(token);
       setLiderancas(result.data);
       setIsAuthenticated(true);
     } catch (err: unknown) {
@@ -100,6 +108,48 @@ export default function PainelLiderancasPage() {
   };
 
   const refreshData = () => handleLogin();
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Excluir este registro permanentemente?")) return;
+    setDeletingId(id);
+    try {
+      const response = await fetch(
+        "https://ucezjskktvkhkmtqzdyc.supabase.co/functions/v1/delete-lideranca",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${authToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id }),
+        }
+      );
+      if (!response.ok) {
+        const result = await response.json();
+        throw new Error(result.error || "Erro ao excluir");
+      }
+      setLiderancas((prev) => prev.filter((l) => l.id !== id));
+      if (selected?.id === id) setSelected(null);
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : "Erro ao excluir registro");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const getCidade = (l: Lideranca): string => {
+    if (l.cidade) return l.cidade;
+    const parts = l.endereco.split(",").map((p) => p.trim()).filter(Boolean);
+    if (parts.length === 0) return "—";
+    const last = parts[parts.length - 1];
+    if (/^[A-Z]{2}$/.test(last) && parts.length >= 2) return parts[parts.length - 2];
+    return last;
+  };
+
+  const getEnderecoCompleto = (l: Lideranca): string => {
+    if (l.rua && l.numero && l.cidade) return `${l.rua}, ${l.numero} — ${l.cidade}`;
+    return l.endereco;
+  };
 
   const filtered = useMemo(() => {
     const term = searchTerm.toLowerCase();
@@ -145,7 +195,10 @@ export default function PainelLiderancasPage() {
         }
 
         // Fall back to on-demand geocoding for legacy records
-        const coords = await geocodeAddress(l.endereco);
+        const enderecoParaGeocode = l.rua && l.numero && l.cidade
+          ? `${l.rua}, ${l.numero}, ${l.cidade}`
+          : l.endereco;
+        const coords = await geocodeAddress(enderecoParaGeocode);
         if (coords) {
           markers.push({ id: l.id, nome: l.nome, responsavel: l.responsavel, lat: coords.lat, lng: coords.lng });
         }
@@ -165,7 +218,7 @@ export default function PainelLiderancasPage() {
 
   return (
     <main className="flex min-h-screen flex-col bg-slate-50">
-      <div className="flex-1 container mx-auto px-4 md:px-6 py-8 max-w-[1600px]">
+      <div className="flex-1 w-full px-2 py-6 max-w-[1800px] mx-auto">
         {!isAuthenticated ? (
           <div className="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-sm border border-slate-100 mt-12">
             <div className="flex flex-col items-center text-center mb-8">
@@ -221,14 +274,14 @@ export default function PainelLiderancasPage() {
           </div>
         ) : (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
               <div>
-                <h1 className="text-3xl font-bold text-slate-900">Painel de Lideranças</h1>
-                <p className="text-slate-500 mt-1">
+                <h1 className="text-2xl font-bold text-slate-900">Painel de Lideranças</h1>
+                <p className="text-slate-500 text-sm mt-0.5">
                   Cadastros recebidos pelo formulário de lideranças.
                 </p>
               </div>
-              <div className="flex items-center gap-4 w-full md:w-auto">
+              <div className="flex items-center gap-3 w-full md:w-auto">
                 <div className="relative flex-1 md:w-64">
                   <Search
                     size={18}
@@ -252,27 +305,29 @@ export default function PainelLiderancasPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-start">
               {/* Coluna esquerda: tabela */}
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden min-w-0">
-                <div className="px-4 py-3 border-b border-slate-100 bg-slate-50">
-                  <h2 className="text-sm font-semibold text-slate-700">Registros</h2>
+              <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden min-w-0">
+                <div className="px-3 py-2 border-b border-slate-100 bg-slate-50">
+                  <h2 className="text-xs font-semibold text-slate-700">Registros</h2>
                 </div>
-                <div className="overflow-x-auto max-h-[calc(100vh-220px)] overflow-y-auto">
-                  <table className="w-full text-left border-collapse min-w-[640px]">
+                <div className="overflow-x-auto max-h-[calc(100vh-180px)] overflow-y-auto">
+                  <table className="w-full text-left border-collapse min-w-[520px]">
                     <thead className="sticky top-0 z-10">
-                      <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 text-xs uppercase tracking-wider">
-                        <th className="p-3 font-semibold">Nome</th>
-                        <th className="p-3 font-semibold">Telefone</th>
-                        <th className="p-3 font-semibold">Potencial</th>
-                        <th className="p-3 font-semibold">Situação</th>
-                        <th className="p-3 font-semibold text-center">Ver</th>
+                      <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 text-[9px] uppercase tracking-wider">
+                        <th className="px-2 py-1.5 font-semibold">Nome</th>
+                        <th className="px-2 py-1.5 font-semibold">Cidade</th>
+                        <th className="px-2 py-1.5 font-semibold">Telefone</th>
+                        <th className="px-2 py-1.5 font-semibold">Potencial</th>
+                        <th className="px-2 py-1.5 font-semibold">Situação</th>
+                        <th className="px-2 py-1.5 font-semibold text-center">Ver</th>
+                        <th className="px-2 py-1.5 font-semibold text-center">Del</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                       {filtered.length === 0 ? (
                         <tr>
-                          <td colSpan={5} className="p-8 text-center text-slate-500">
+                          <td colSpan={7} className="p-8 text-center text-slate-500 text-xs">
                             Nenhuma liderança encontrada.
                           </td>
                         </tr>
@@ -286,27 +341,30 @@ export default function PainelLiderancasPage() {
                               highlightedId === l.id && "bg-brand-50/60"
                             )}
                           >
-                            <td className="p-3 font-medium text-slate-900 text-sm">{l.nome}</td>
-                            <td className="p-3 text-slate-600 text-sm">
+                            <td className="px-2 py-1.5 font-medium text-slate-900 text-[11px] max-w-[130px] truncate">{l.nome}</td>
+                            <td className="px-2 py-1.5 text-slate-600 text-[11px] whitespace-nowrap">
+                              {getCidade(l)}
+                            </td>
+                            <td className="px-2 py-1.5 text-slate-600 text-[11px]">
                               <a
                                 href={`https://wa.me/55${l.telefone.replace(/\D/g, "")}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}
-                                className="flex items-center gap-1 hover:text-brand-600 transition-colors"
+                                className="flex items-center gap-1 hover:text-brand-600 transition-colors whitespace-nowrap"
                               >
-                                <Phone size={14} />
+                                <Phone size={11} />
                                 {l.telefone}
                               </a>
                             </td>
-                            <td className="p-3 text-slate-600 text-xs">
+                            <td className="px-2 py-1.5 text-slate-600 text-[11px] whitespace-nowrap">
                               {POTENCIAL_LABELS[l.potencial_influencia] ||
                                 l.potencial_influencia}
                             </td>
-                            <td className="p-3">
+                            <td className="px-2 py-1.5">
                               <span
                                 className={cn(
-                                  "text-xs font-medium rounded-full px-2 py-0.5 border whitespace-nowrap",
+                                  "text-[9px] font-medium rounded-full px-1.5 py-0.5 border whitespace-nowrap",
                                   SITUACAO_COLORS[l.situacao] ||
                                     "bg-slate-100 text-slate-700 border-slate-200"
                                 )}
@@ -314,17 +372,30 @@ export default function PainelLiderancasPage() {
                                 {l.situacao}
                               </span>
                             </td>
-                            <td className="p-3 text-center">
+                            <td className="px-2 py-1.5 text-center">
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setSelected(l);
                                   setHighlightedId(l.id);
                                 }}
-                                className="p-2 bg-slate-100 hover:bg-brand-100 text-slate-600 hover:text-brand-700 rounded-lg transition-colors inline-flex"
+                                className="p-1 bg-slate-100 hover:bg-brand-100 text-slate-600 hover:text-brand-700 rounded transition-colors inline-flex"
                                 title="Visualizar liderança"
                               >
-                                <Eye size={18} />
+                                <Eye size={13} />
+                              </button>
+                            </td>
+                            <td className="px-2 py-1.5 text-center">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(l.id);
+                                }}
+                                disabled={deletingId === l.id}
+                                className="p-1 bg-red-50 hover:bg-red-100 text-red-500 hover:text-red-700 rounded transition-colors inline-flex disabled:opacity-50"
+                                title="Excluir registro"
+                              >
+                                <Trash2 size={13} />
                               </button>
                             </td>
                           </tr>
@@ -336,13 +407,13 @@ export default function PainelLiderancasPage() {
               </div>
 
               {/* Coluna direita: mapa */}
-              <div className="min-w-0 xl:sticky xl:top-28">
-                <div className="px-4 py-3 border border-slate-100 border-b-0 rounded-t-2xl bg-slate-50 flex items-center justify-between gap-2">
-                  <h2 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                    <MapPin size={16} className="text-brand-600" />
+              <div className="min-w-0 xl:sticky xl:top-6">
+                <div className="px-3 py-2 border border-slate-100 border-b-0 rounded-t-xl bg-slate-50 flex items-center justify-between gap-2">
+                  <h2 className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                    <MapPin size={14} className="text-brand-600" />
                     Mapa de lideranças
                   </h2>
-                  <span className="text-xs text-slate-500">
+                  <span className="text-[10px] text-slate-500">
                     {mapLoading
                       ? "Localizando endereços..."
                       : `${mapMarkers.length} de ${filtered.length} no mapa`}
@@ -427,11 +498,19 @@ export default function PainelLiderancasPage() {
                     {formatDate(selected.created_at)}
                   </p>
                 </div>
+                <div>
+                  <p className="text-xs text-slate-500 mb-1">Cidade</p>
+                  <p className="font-semibold text-slate-900">{getCidade(selected)}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 mb-1">Número</p>
+                  <p className="font-semibold text-slate-900">{selected.numero || "—"}</p>
+                </div>
                 <div className="sm:col-span-2">
-                  <p className="text-xs text-slate-500 mb-1">Endereço</p>
+                  <p className="text-xs text-slate-500 mb-1">Rua / Endereço completo</p>
                   <p className="font-semibold text-slate-900 flex items-start gap-1">
                     <MapPin size={14} className="text-slate-400 mt-0.5 shrink-0" />
-                    {selected.endereco}
+                    {getEnderecoCompleto(selected)}
                   </p>
                 </div>
               </div>

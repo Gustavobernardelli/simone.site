@@ -63,21 +63,36 @@ export default function LinksPage() {
 
         {/* Image links */}
         <div className="w-full flex flex-col gap-4 items-center">
-          {links.map((link) => (
-            <a
-              key={link.alt}
-              href={link.href}
-              target={link.href.startsWith("http") ? "_blank" : undefined}
-              rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
-              className="w-[90%] block rounded-2xl overflow-hidden shadow-lg transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]"
-            >
-              <img
-                src={link.image}
-                alt={link.alt}
-                className="w-full h-auto block"
-                draggable={false}
-              />
-            </a>
+          {links.map((link, i) => (
+            <>
+              <a
+                key={link.alt}
+                href={link.href}
+                target={link.href.startsWith("http") ? "_blank" : undefined}
+                rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                className="w-[90%] block rounded-2xl overflow-hidden shadow-lg transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <img
+                  src={link.image}
+                  alt={link.alt}
+                  className="w-full h-auto block"
+                  draggable={false}
+                />
+              </a>
+
+              {i === 0 && (
+                <a
+                  key="quero-doar"
+                  href="#"
+                  className="w-[90%] block rounded-2xl shadow-lg transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98] py-4 text-center"
+                  style={{ background: "linear-gradient(135deg, #22c55e 0%, #15803d 100%)" }}
+                >
+                  <span className="text-white font-bold text-xl tracking-wide drop-shadow">
+                    💚 Quero Doar
+                  </span>
+                </a>
+              )}
+            </>
           ))}
         </div>
 
