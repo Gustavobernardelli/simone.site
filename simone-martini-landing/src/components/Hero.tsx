@@ -18,14 +18,33 @@ export function Hero() {
       <div className="absolute inset-0 bg-gradient-to-r from-[#0A0112]/95 via-[#0A0112]/70 to-[#0A0112]/20 lg:to-transparent z-0 pointer-events-none" />
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-8 items-center">
           
+          {/* Mobile Image - Shown first on mobile, hidden on desktop */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
+            className="flex lg:hidden justify-center items-center w-full relative z-20 mb-2"
+          >
+            <div className="relative w-full max-w-[260px] sm:max-w-[300px] aspect-[4/5] flex justify-center">
+              {/* Subtle background glow behind the portrait */}
+              <div className="absolute inset-0 bg-gradient-to-t from-accent-500/10 to-transparent rounded-full blur-3xl -z-10" />
+              
+              <img
+                src="https://ucezjskktvkhkmtqzdyc.supabase.co/storage/v1/object/public/Arquivos/Imagens/imagem%20principal.png"
+                alt="Simone Martini"
+                className="h-full w-auto object-contain drop-shadow-[0_15px_30px_rgba(255,107,0,0.25)] select-none pointer-events-none"
+              />
+            </div>
+          </motion.div>
+
           {/* Text Content */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="max-w-2xl animate-in fade-in slide-in-from-bottom-5 duration-700"
+            className="max-w-2xl animate-in fade-in slide-in-from-bottom-5 duration-700 w-full"
           >
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 text-accent-400 text-sm font-medium mb-6 backdrop-blur-md border border-white/10 shadow-inner">
               <span className="relative flex h-2 w-2">
@@ -43,7 +62,8 @@ export function Hero() {
               Advogada, sarandiense e ex-procuradora-geral de Marialva. Uma liderança de ficha limpa pelo partido NOVO para fiscalizar com firmeza e trabalhar pelo desenvolvimento de Sarandi e do nosso estado.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4">
+            {/* Desktop Button - hidden on mobile */}
+            <div className="hidden lg:flex flex-col sm:flex-row gap-4">
               <a
                 href="#support"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-accent-500 to-accent-600 text-white font-bold rounded-full hover:from-accent-600 hover:to-accent-700 shadow-lg shadow-accent-500/25 hover:shadow-accent-500/40 transition-all hover:scale-105 active:scale-95"
@@ -54,14 +74,14 @@ export function Hero() {
             </div>
           </motion.div>
 
-          {/* Image Content */}
+          {/* Desktop Image - Hidden on mobile, shown on desktop */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 30 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            className="flex justify-center items-center w-full relative z-20"
+            className="hidden lg:flex justify-center items-center w-full relative z-20"
           >
-            <div className="relative w-full max-w-[300px] sm:max-w-[360px] lg:max-w-none lg:h-[550px] aspect-[4/5] lg:aspect-auto flex justify-center">
+            <div className="relative w-full lg:h-[550px] aspect-auto flex justify-center">
               {/* Subtle background glow behind the portrait */}
               <div className="absolute inset-0 bg-gradient-to-t from-accent-500/10 to-transparent rounded-full blur-3xl -z-10" />
               
@@ -72,6 +92,23 @@ export function Hero() {
               />
             </div>
           </motion.div>
+
+          {/* Mobile Button - Shown last on mobile, hidden on desktop */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+            className="flex lg:hidden flex-col w-full z-20 mt-4"
+          >
+            <a
+              href="#support"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-accent-500 to-accent-600 text-white font-bold rounded-full hover:from-accent-600 hover:to-accent-700 shadow-lg shadow-accent-500/25 hover:shadow-accent-500/40 transition-all hover:scale-105 active:scale-95 text-center text-sm font-bold"
+            >
+              Enviar demanda ou sugestão
+              <ArrowRight size={18} />
+            </a>
+          </motion.div>
+
         </div>
       </div>
     </section>
