@@ -13,6 +13,10 @@ export function Hero() {
       <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[800px] h-[800px] bg-purple-900/10 rounded-full blur-3xl opacity-30 z-0" />
       <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-[600px] h-[600px] bg-fuchsia-900/20 rounded-full blur-3xl opacity-40 z-0" />
 
+      {/* Dark overlays to increase text contrast and readability */}
+      <div className="absolute inset-0 bg-[#0A0112]/75 mix-blend-multiply z-0 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#0A0112]/95 via-[#0A0112]/70 to-[#0A0112]/20 lg:to-transparent z-0 pointer-events-none" />
+
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
           
