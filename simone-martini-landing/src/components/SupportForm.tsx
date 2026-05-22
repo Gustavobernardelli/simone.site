@@ -66,7 +66,7 @@ export function SupportForm() {
   };
 
   return (
-    <section id="support" className="py-24 bg-brand-900 relative overflow-hidden">
+    <section id="enviar_demanda" className="py-24 bg-brand-900 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
         <div className="absolute top-[-10%] right-[-5%] w-96 h-96 bg-brand-800 rounded-full blur-3xl opacity-50"></div>

@@ -64,7 +64,7 @@ export function Hero() {
             {/* Desktop Button - hidden on mobile */}
             <div className="hidden lg:flex flex-col sm:flex-row gap-4">
               <a
-                href="#support"
+                href="#enviar_demanda"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-accent-500 to-accent-600 text-white font-bold rounded-full hover:from-accent-600 hover:to-accent-700 shadow-lg shadow-accent-500/25 hover:shadow-accent-500/40 transition-all hover:scale-105 active:scale-95"
               >
                 Enviar demanda ou sugestão
@@ -100,7 +100,7 @@ export function Hero() {
             className="flex lg:hidden flex-col w-full z-20 mt-4"
           >
             <a
-              href="#support"
+              href="#enviar_demanda"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-accent-500 to-accent-600 text-white font-bold rounded-full hover:from-accent-600 hover:to-accent-700 shadow-lg shadow-accent-500/25 hover:shadow-accent-500/40 transition-all hover:scale-105 active:scale-95 text-center text-sm font-bold"
             >
               Enviar demanda ou sugestão

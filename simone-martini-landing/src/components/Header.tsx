@@ -19,7 +19,7 @@ export function Header() {
   const navLinks = [
     { name: "Quem Sou", href: "#about" },
     { name: "Bandeiras", href: "#proposals" },
-    { name: "Enviar Demanda", href: "#support" },
+    { name: "Enviar Demanda", href: "#enviar_demanda" },
   ];
 
   return (
@@ -52,7 +52,7 @@ export function Header() {
             </a>
           ))}
           <a
-            href="#support"
+            href="#enviar_demanda"
             className="px-6 py-2.5 bg-gradient-to-r from-accent-500 to-accent-600 text-white text-sm font-bold rounded-full hover:from-accent-600 hover:to-accent-700 shadow-md hover:shadow-lg hover:shadow-accent-500/20 transition-all transform hover:-translate-y-0.5 duration-300"
           >
             Enviar demanda
@@ -83,7 +83,7 @@ export function Header() {
             </a>
           ))}
           <a
-            href="#support"
+            href="#enviar_demanda"
             className="w-full text-center px-6 py-3 bg-gradient-to-r from-accent-500 to-accent-600 text-white text-base font-bold rounded-md hover:from-accent-600 hover:to-accent-700 mt-2 transition-all shadow-md active:scale-95"
             onClick={() => setIsMobileMenuOpen(false)}
           >

@@ -3,18 +3,18 @@
 const links = [
   {
     image: "https://ucezjskktvkhkmtqzdyc.supabase.co/storage/v1/object/public/Arquivos/Imagens/link1.png",
-    href: "/#support",
+    href: "/#enviar_demanda",
     alt: "Enviar Demanda",
   },
   {
     image: "https://ucezjskktvkhkmtqzdyc.supabase.co/storage/v1/object/public/Arquivos/Imagens/link2.png",
-    href: "/",
+    href: "https://simartini.com.br/",
     alt: "Site Oficial",
   },
   {
     image: "https://ucezjskktvkhkmtqzdyc.supabase.co/storage/v1/object/public/Arquivos/Imagens/link3.png",
-    href: "/#agenda",
-    alt: "Agenda de Eventos",
+    href: "/#enviar_demanda",
+    alt: "Enviar Demanda",
   },
   {
     image: "https://ucezjskktvkhkmtqzdyc.supabase.co/storage/v1/object/public/Arquivos/Imagens/link4.png",
@@ -80,18 +80,6 @@ export default function LinksPage() {
                 />
               </a>
 
-              {i === 0 && (
-                <a
-                  key="quero-doar"
-                  href="#"
-                  className="w-[90%] block rounded-2xl shadow-lg transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98] py-4 text-center"
-                  style={{ background: "linear-gradient(135deg, #22c55e 0%, #15803d 100%)" }}
-                >
-                  <span className="text-white font-bold text-xl tracking-wide drop-shadow">
-                    💚 Quero Doar
-                  </span>
-                </a>
-              )}
             </>
           ))}
         </div>

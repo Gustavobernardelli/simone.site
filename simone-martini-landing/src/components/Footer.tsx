@@ -30,7 +30,7 @@ export function Footer() {
             <ul className="space-y-2 text-sm">
               <li><a href="/#about" className="hover:text-accent-400 transition-colors">Quem Sou</a></li>
               <li><a href="/#proposals" className="hover:text-accent-400 transition-colors">Bandeiras</a></li>
-              <li><a href="/#support" className="hover:text-accent-400 transition-colors">Enviar Demanda</a></li>
+              <li><a href="/#enviar_demanda" className="hover:text-accent-400 transition-colors">Enviar Demanda</a></li>
               <li><a href="/politica-de-privacidade" className="hover:text-accent-400 transition-colors">Política de Privacidade</a></li>
             </ul>
           </div>
