@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Award, BookOpen, Globe2, Landmark, GraduationCap, Heart, CheckCircle2 } from "lucide-react";
+import { Award, BookOpen, Globe2, Landmark, GraduationCap, Heart, CheckCircle2, Users } from "lucide-react";
 
 export function About() {
   return (
@@ -25,7 +25,8 @@ export function About() {
         <div className="grid lg:grid-cols-12 gap-8 items-stretch">
           
           {/* Left Column: Image and Personal Traits */}
-          <div className="lg:col-span-5 flex flex-col justify-between bg-brand-50 rounded-3xl p-8 border border-slate-100">
+          <div className="lg:col-span-5 flex flex-col justify-between bg-brand-50 rounded-3xl p-8 border-2 border-accent-400 shadow-lg shadow-accent-500/10 relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent-400 via-amber-400 to-accent-500 rounded-t-3xl" />
             <div>
               <h3 className="text-xl font-bold text-brand-800 mb-4">Além da Política</h3>
               <p className="text-slate-600 mb-6 leading-relaxed">
@@ -33,6 +34,16 @@ export function About() {
               </p>
               
               <div className="space-y-4">
+                <div className="flex gap-4 items-start">
+                  <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-accent-500 shrink-0 shadow-sm">
+                    <Users className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-slate-800">Trabalho pela comunidade</h4>
+                    <p className="text-sm text-slate-500">Sem cargo público, articulou junto a deputados R$500.000 para entidades da cidade e liderou um projeto que garantiu óculos de grau para quase 400 crianças.</p>
+                  </div>
+                </div>
+
                 <div className="flex gap-4 items-start">
                   <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-accent-500 shrink-0 shadow-sm">
                     <Heart className="w-5 h-5" />

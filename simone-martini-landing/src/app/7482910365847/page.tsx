@@ -24,6 +24,9 @@ import {
   X,
   ImageIcon,
   Trash2,
+  ChevronUp,
+  ChevronDown,
+  ChevronsUpDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -74,6 +77,20 @@ export default function PainelLiderancasPage() {
   const [mapLoading, setMapLoading] = useState(false);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  type SortKey = "nome" | "cidade" | "telefone" | "potencial_influencia" | "situacao" | "responsavel";
+  type SortDir = "asc" | "desc";
+  const [sortKey, setSortKey] = useState<SortKey>("nome");
+  const [sortDir, setSortDir] = useState<SortDir>("asc");
+
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir("asc");
+    }
+  };
 
   const handleLogin = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -153,15 +170,31 @@ export default function PainelLiderancasPage() {
 
   const filtered = useMemo(() => {
     const term = searchTerm.toLowerCase();
-    return liderancas.filter(
+    const rows = liderancas.filter(
       (l) =>
         l.nome.toLowerCase().includes(term) ||
         l.telefone.toLowerCase().includes(term) ||
         l.endereco.toLowerCase().includes(term) ||
         l.situacao.toLowerCase().includes(term) ||
-        (l.responsavel && l.responsavel.toLowerCase().includes(term))
+        (l.responsavel && l.responsavel.toLowerCase().includes(term)) ||
+        (l.cidade && l.cidade.toLowerCase().includes(term))
     );
-  }, [liderancas, searchTerm]);
+
+    return [...rows].sort((a, b) => {
+      let aVal: string;
+      let bVal: string;
+      if (sortKey === "cidade") {
+        aVal = (a.cidade ?? "").toLowerCase();
+        bVal = (b.cidade ?? "").toLowerCase();
+      } else {
+        aVal = ((a[sortKey] as string | null) ?? "").toLowerCase();
+        bVal = ((b[sortKey] as string | null) ?? "").toLowerCase();
+      }
+      if (aVal < bVal) return sortDir === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortDir === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [liderancas, searchTerm, sortKey, sortDir]);
 
   const formatDate = (isoString: string) => {
     return new Date(isoString).toLocaleDateString("pt-BR", {
@@ -312,14 +345,34 @@ export default function PainelLiderancasPage() {
                   <h2 className="text-xs font-semibold text-slate-700">Registros</h2>
                 </div>
                 <div className="overflow-x-auto max-h-[calc(100vh-180px)] overflow-y-auto">
-                  <table className="w-full text-left border-collapse min-w-[520px]">
+                  <table className="w-full text-left border-collapse min-w-[620px]">
                     <thead className="sticky top-0 z-10">
                       <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 text-[9px] uppercase tracking-wider">
-                        <th className="px-2 py-1.5 font-semibold">Nome</th>
-                        <th className="px-2 py-1.5 font-semibold">Cidade</th>
-                        <th className="px-2 py-1.5 font-semibold">Telefone</th>
-                        <th className="px-2 py-1.5 font-semibold">Potencial</th>
-                        <th className="px-2 py-1.5 font-semibold">Situação</th>
+                        {(
+                          [
+                            { key: "nome", label: "Nome" },
+                            { key: "cidade", label: "Cidade" },
+                            { key: "telefone", label: "Telefone" },
+                            { key: "potencial_influencia", label: "Potencial" },
+                            { key: "situacao", label: "Situação" },
+                            { key: "responsavel", label: "Responsável" },
+                          ] as { key: SortKey; label: string }[]
+                        ).map(({ key, label }) => (
+                          <th
+                            key={key}
+                            className="px-2 py-1.5 font-semibold cursor-pointer select-none hover:text-slate-800 hover:bg-slate-100 transition-colors"
+                            onClick={() => handleSort(key)}
+                          >
+                            <span className="flex items-center gap-0.5">
+                              {label}
+                              {sortKey === key ? (
+                                sortDir === "asc" ? <ChevronUp size={10} className="text-brand-600" /> : <ChevronDown size={10} className="text-brand-600" />
+                              ) : (
+                                <ChevronsUpDown size={10} className="opacity-30" />
+                              )}
+                            </span>
+                          </th>
+                        ))}
                         <th className="px-2 py-1.5 font-semibold text-center">Ver</th>
                         <th className="px-2 py-1.5 font-semibold text-center">Del</th>
                       </tr>
@@ -327,7 +380,7 @@ export default function PainelLiderancasPage() {
                     <tbody className="divide-y divide-slate-100">
                       {filtered.length === 0 ? (
                         <tr>
-                          <td colSpan={7} className="p-8 text-center text-slate-500 text-xs">
+                          <td colSpan={8} className="p-8 text-center text-slate-500 text-xs">
                             Nenhuma liderança encontrada.
                           </td>
                         </tr>
@@ -358,8 +411,7 @@ export default function PainelLiderancasPage() {
                               </a>
                             </td>
                             <td className="px-2 py-1.5 text-slate-600 text-[11px] whitespace-nowrap">
-                              {POTENCIAL_LABELS[l.potencial_influencia] ||
-                                l.potencial_influencia}
+                              {POTENCIAL_LABELS[l.potencial_influencia] || l.potencial_influencia}
                             </td>
                             <td className="px-2 py-1.5">
                               <span
@@ -371,6 +423,9 @@ export default function PainelLiderancasPage() {
                               >
                                 {l.situacao}
                               </span>
+                            </td>
+                            <td className="px-2 py-1.5 text-slate-600 text-[11px] max-w-[100px] truncate">
+                              {l.responsavel || "—"}
                             </td>
                             <td className="px-2 py-1.5 text-center">
                               <button

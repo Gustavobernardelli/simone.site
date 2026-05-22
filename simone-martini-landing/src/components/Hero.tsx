@@ -7,14 +7,13 @@ export function Hero() {
   return (
     <section
       className="relative min-h-[90vh] flex items-center pt-24 pb-12 overflow-hidden bg-[#0A0112] bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('https://ucezjskktvkhkmtqzdyc.supabase.co/storage/v1/object/public/Arquivos/Imagens/capa%20pr.jpg')" }}
+      style={{ backgroundImage: "url('https://ucezjskktvkhkmtqzdyc.supabase.co/storage/v1/object/public/Arquivos/Imagens/capasite2.jpg')" }}
     >
       {/* Abstract Background Shapes */}
       <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[800px] h-[800px] bg-purple-900/10 rounded-full blur-3xl opacity-30 z-0" />
       <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-[600px] h-[600px] bg-fuchsia-900/20 rounded-full blur-3xl opacity-40 z-0" />
 
       {/* Dark overlays to increase text contrast and readability */}
-      <div className="absolute inset-0 bg-[#0A0112]/75 mix-blend-multiply z-0 pointer-events-none" />
       <div className="absolute inset-0 bg-gradient-to-r from-[#0A0112]/95 via-[#0A0112]/70 to-[#0A0112]/20 lg:to-transparent z-0 pointer-events-none" />
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
@@ -29,7 +28,7 @@ export function Hero() {
           >
             <div className="relative w-full max-w-[260px] sm:max-w-[300px] aspect-[4/5] flex justify-center">
               {/* Subtle background glow behind the portrait */}
-              <div className="absolute inset-0 bg-gradient-to-t from-accent-500/10 to-transparent rounded-full blur-3xl -z-10" />
+              <div className="absolute inset-0 bg-gradient-to-t from-accent-500/40 to-transparent rounded-full blur-3xl -z-10" />
               
               <img
                 src="https://ucezjskktvkhkmtqzdyc.supabase.co/storage/v1/object/public/Arquivos/Imagens/imagem%20principal.png"
@@ -51,15 +50,15 @@ export function Hero() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-accent-500"></span>
               </span>
-              Pré-candidata a Deputada Estadual • Sarandi
+              Pré-candidata a Deputada Estadual • Paraná 2026
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-[1.1] tracking-tight mb-6">
               A força da <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-400 via-amber-400 to-accent-500 drop-shadow-[0_2px_10px_rgba(249,115,22,0.2)]">renovação</span> e do cuidado real no Paraná.
             </h1>
             
-            <p className="text-lg md:text-xl text-slate-200 mb-8 leading-relaxed max-w-lg">
-              Advogada, sarandiense e ex-procuradora-geral municipal. Uma liderança de ficha limpa pelo partido NOVO para fiscalizar com firmeza e trabalhar pelo desenvolvimento do nosso estado.
+            <p className="text-lg md:text-xl text-slate-200 mb-8 leading-relaxed max-w-xl text-justify">
+              Advogada, sarandiense e ex-procuradora-geral municipal, que recebeu <strong>12.380 votos</strong> de confiança em sua última campanha para prefeitura de Sarandi. Uma liderança de ficha limpa pelo partido <strong>NOVO</strong> para fiscalizar com firmeza e trabalhar pelo desenvolvimento do nosso estado.
             </p>
             
             {/* Desktop Button - hidden on mobile */}
@@ -83,7 +82,7 @@ export function Hero() {
           >
             <div className="relative w-full lg:h-[550px] aspect-auto flex justify-center">
               {/* Subtle background glow behind the portrait */}
-              <div className="absolute inset-0 bg-gradient-to-t from-accent-500/10 to-transparent rounded-full blur-3xl -z-10" />
+              <div className="absolute inset-0 bg-gradient-to-t from-accent-500/40 to-transparent rounded-full blur-3xl -z-10" />
               
               <img
                 src="https://ucezjskktvkhkmtqzdyc.supabase.co/storage/v1/object/public/Arquivos/Imagens/imagem%20principal.png"
