@@ -1,63 +1,150 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { TrendingUp, Lightbulb, ShieldCheck, Users } from "lucide-react";
+import { 
+  Sparkles, 
+  UserCheck, 
+  ShieldCheck, 
+  MapPin, 
+  HeartHandshake, 
+  Briefcase, 
+  GraduationCap, 
+  Activity, 
+  ShieldAlert, 
+  Sprout, 
+  Road,
+  ArrowRight
+} from "lucide-react";
 
-const proposals = [
+const frentes = [
   {
-    icon: TrendingUp,
-    title: "Desenvolvimento Regional",
-    description: "Atração de novos investimentos e incentivos fiscais para fortalecer o comércio local e gerar empregos diretos em nossa região.",
+    icon: Sparkles,
+    title: "Renovação Política",
+    description: "Gestão pública eficiente, com rigor técnico e transparência fiscal, sob a bandeira de integridade do partido NOVO.",
   },
   {
-    icon: Lightbulb,
-    title: "Inovação na Educação",
-    description: "Programas de modernização das escolas estaduais, capacitação de professores e inclusão digital para todos os alunos.",
+    icon: UserCheck,
+    title: "Representatividade Feminina",
+    description: "Mulheres qualificadas e com propósito ocupando a política. Única pré-candidata a deputada estadual saindo de Sarandi.",
   },
   {
     icon: ShieldCheck,
-    title: "Transparência Total",
-    description: "Mandato aberto com prestação de contas mensal e ferramentas digitais para que o cidadão acompanhe cada projeto e votação.",
+    title: "Combate à Corrupção",
+    description: "Foco absoluto na ética e na transparência de recursos, com apoio e forte alinhamento com Sergio Moro e Deltan Dallagnol.",
   },
   {
-    icon: Users,
-    title: "Comunidade Fortalecida",
-    description: "Apoio a projetos sociais, saúde preventiva e infraestrutura básica, garantindo qualidade de vida desde os bairros até os centros.",
+    icon: MapPin,
+    title: "A Voz de Sarandi na ALEP",
+    description: "Uma reparação histórica: eleger pela primeira vez uma deputada de Sarandi para lutar diretamente por nossa região na Assembleia.",
   },
+];
+
+const bandeiras = [
+  {
+    icon: Activity,
+    title: "Saúde da Mulher & Endometriose",
+    description: "Apoio e conscientização sobre a endometriose (que afeta 1 em cada 10 mulheres), facilitando o diagnóstico e o acesso ao tratamento adequado."
+  },
+  {
+    icon: HeartHandshake,
+    title: "Apoio e Empreendedorismo Feminino",
+    description: "Programas de incentivo ao mercado de trabalho, suporte à maternidade e redes de acolhimento contra a violência doméstica."
+  },
+  {
+    icon: GraduationCap,
+    title: "Educação & Ensino Estadual",
+    description: "Modernização das escolas estaduais, valorização profissional dos professores e incentivo à formação técnica dos jovens."
+  },
+  {
+    icon: ShieldAlert,
+    title: "Segurança Pública Integrada",
+    description: "Integração estratégica entre forças estaduais e a Guarda Municipal, garantindo mais policiamento nos bairros."
+  },
+  {
+    icon: Sprout,
+    title: "Desenvolvimento e Agronegócio",
+    description: "Geração de empregos no interior do estado e apoio direto ao agronegócio como motor do crescimento econômico regional."
+  },
+  {
+    icon: Road,
+    title: "Infraestrutura de Sarandi e Região",
+    description: "Articulação de investimentos estaduais para pavimentação, saneamento e mobilidade urbana para o desenvolvimento local."
+  }
 ];
 
 export function Proposals() {
   return (
-    <section id="proposals" className="py-24 bg-slate-50">
+    <section id="proposals" className="py-24 bg-brand-50/50">
       <div className="container mx-auto px-4 md:px-6">
         
+        {/* Section 1: Frentes de Atuação */}
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <h2 className="text-sm font-bold tracking-widest text-brand-700 uppercase mb-3">Nossos Pilares</h2>
-          <h3 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6">
-            Projetos reais para problemas reais
+          <span className="text-xs font-bold tracking-widest text-accent-500 uppercase px-3 py-1 bg-accent-50 rounded-full border border-accent-100">
+            Pilares do Projeto
+          </span>
+          <h3 className="text-3xl md:text-5xl font-bold text-brand-800 mt-4 mb-6">
+            As 4 Frentes de Atuação
           </h3>
           <p className="text-lg text-slate-600">
-            Acreditamos que a política deve apresentar soluções concretas. Estes são os eixos centrais do nosso compromisso com o estado.
+            Valores sólidos e compromisso inegociável com a renovação ética no Paraná.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {proposals.map((item, index) => (
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-24">
+          {frentes.map((item, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 border border-slate-100 group"
+              className="bg-white rounded-3xl p-8 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 border border-slate-100 group"
             >
-              <div className="w-14 h-14 bg-brand-50 rounded-2xl flex items-center justify-center text-brand-600 mb-6 group-hover:bg-brand-600 group-hover:text-white transition-colors duration-300">
+              <div className="w-14 h-14 bg-brand-100 rounded-2xl flex items-center justify-center text-brand-700 mb-6 group-hover:bg-accent-500 group-hover:text-white transition-colors duration-300">
                 <item.icon size={28} strokeWidth={1.5} />
               </div>
               <h4 className="text-xl font-bold text-slate-900 mb-4">{item.title}</h4>
-              <p className="text-slate-600 leading-relaxed">
+              <p className="text-slate-600 leading-relaxed text-sm">
                 {item.description}
               </p>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Section 2: Bandeiras */}
+        <div className="text-center max-w-2xl mx-auto mb-16">
+          <span className="text-xs font-bold tracking-widest text-accent-500 uppercase px-3 py-1 bg-accent-50 rounded-full border border-accent-100">
+            Nossas Bandeiras
+          </span>
+          <h3 className="text-3xl md:text-5xl font-bold text-brand-800 mt-4 mb-6">
+            O que Simone Martini Defende
+          </h3>
+          <p className="text-lg text-slate-600">
+            Ações práticas voltadas para a saúde, segurança, educação e o desenvolvimento econômico do nosso povo.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {bandeiras.map((item, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.5, delay: index * 0.05 }}
+              className="bg-white rounded-3xl p-8 border border-slate-100 hover:border-accent-200 shadow-sm hover:shadow-lg transition-all duration-300"
+            >
+              <div className="flex gap-4 items-start">
+                <div className="w-12 h-12 bg-accent-50 rounded-2xl flex items-center justify-center text-accent-500 shrink-0">
+                  <item.icon size={24} />
+                </div>
+                <div>
+                  <h4 className="text-lg font-bold text-slate-900 mb-2">{item.title}</h4>
+                  <p className="text-slate-600 text-sm leading-relaxed">
+                    {item.description}
+                  </p>
+                </div>
+              </div>
             </motion.div>
           ))}
         </div>

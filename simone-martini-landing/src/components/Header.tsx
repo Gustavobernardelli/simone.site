@@ -18,8 +18,7 @@ export function Header() {
 
   const navLinks = [
     { name: "Quem Sou", href: "#about" },
-    // { name: "Propostas", href: "#proposals" },
-    // { name: "Agenda", href: "#agenda" },
+    { name: "Bandeiras", href: "#proposals" },
   ];
 
   return (
@@ -36,7 +35,7 @@ export function Header() {
           <img
             src="https://ucezjskktvkhkmtqzdyc.supabase.co/storage/v1/object/public/Arquivos/Imagens/logo%20branca.png"
             alt="Simone Martini"
-            className="h-[75px] md:h-[90px] w-auto object-contain transition-transform duration-300 group-hover:scale-105 -ml-[18px] md:-ml-[22px] -my-[15px] md:-my-[20px]"
+            className="h-[108px] md:h-[130px] w-auto object-contain transition-transform duration-300 group-hover:scale-105 -ml-[26px] md:-ml-[31px] -my-[22px] md:-my-[29px]"
           />
         </a>
 
@@ -46,14 +45,14 @@ export function Header() {
             <a
               key={link.name}
               href={link.href}
-              className="text-sm font-medium text-white/90 hover:text-amber-400 transition-colors duration-300"
+              className="text-sm font-medium text-white/90 hover:text-accent-400 transition-colors duration-300"
             >
               {link.name}
             </a>
           ))}
           <a
             href="#support"
-            className="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 text-sm font-bold rounded-full hover:from-amber-600 hover:to-amber-700 shadow-md hover:shadow-lg hover:shadow-amber-500/20 transition-all transform hover:-translate-y-0.5 duration-300"
+            className="px-6 py-2.5 bg-gradient-to-r from-accent-500 to-accent-600 text-white text-sm font-bold rounded-full hover:from-accent-600 hover:to-accent-700 shadow-md hover:shadow-lg hover:shadow-accent-500/20 transition-all transform hover:-translate-y-0.5 duration-300"
           >
             Enviar demanda
           </a>
@@ -76,7 +75,7 @@ export function Header() {
             <a
               key={link.name}
               href={link.href}
-              className="text-base font-medium text-white/90 p-2 hover:bg-white/5 hover:text-amber-400 rounded-md transition-colors"
+              className="text-base font-medium text-white/90 p-2 hover:bg-white/5 hover:text-accent-400 rounded-md transition-colors"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               {link.name}
@@ -84,7 +83,7 @@ export function Header() {
           ))}
           <a
             href="#support"
-            className="w-full text-center px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 text-base font-bold rounded-md hover:from-amber-600 hover:to-amber-700 mt-2 transition-all shadow-md active:scale-95"
+            className="w-full text-center px-6 py-3 bg-gradient-to-r from-accent-500 to-accent-600 text-white text-base font-bold rounded-md hover:from-accent-600 hover:to-accent-700 mt-2 transition-all shadow-md active:scale-95"
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Enviar demanda

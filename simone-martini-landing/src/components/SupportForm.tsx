@@ -9,7 +9,7 @@ type FormValues = {
   fullName: string;
   whatsapp: string;
   city: string;
-  demand?: string;
+  demand: string;
   privacyPolicy: boolean;
 };
 
@@ -79,9 +79,9 @@ export function SupportForm() {
           {/* Left Side - Info */}
           <div className="md:w-5/12 bg-gradient-to-br from-brand-700 to-brand-900 p-10 md:p-12 text-white flex flex-col justify-between">
             <div>
-              <h3 className="text-3xl font-bold mb-4 leading-tight">Faça Parte da Mudança</h3>
+              <h3 className="text-3xl font-bold mb-4 leading-tight">Traga sua Demanda</h3>
               <p className="text-brand-100 mb-8 leading-relaxed">
-                Precisamos de pessoas engajadas que acreditam num futuro melhor para o nosso estado. Cadastre-se para receber novidades, participar das nossas reuniões e construir esse projeto junto com a Simone.
+                Queremos ouvir você. Compartilhe o que está faltando na sua cidade, aponte problemas ou envie solicitações diretamente para a equipe da Simone. A sua participação é fundamental para construirmos soluções reais.
               </p>
             </div>
             
@@ -90,19 +90,19 @@ export function SupportForm() {
                 <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
                   <CheckCircle className="text-accent-500 w-5 h-5" />
                 </div>
-                <span className="text-sm font-medium">Fique por dentro das propostas</span>
+                <span className="text-sm font-medium">Aponte melhorias e necessidades locais</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
                   <CheckCircle className="text-accent-500 w-5 h-5" />
                 </div>
-                <span className="text-sm font-medium">Convites exclusivos para eventos</span>
+                <span className="text-sm font-medium">Envie sugestões e solicitações de melhoria</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
                   <CheckCircle className="text-accent-500 w-5 h-5" />
                 </div>
-                <span className="text-sm font-medium">Participe dos grupos de WhatsApp</span>
+                <span className="text-sm font-medium">Fale diretamente com nossa equipe</span>
               </div>
             </div>
           </div>
@@ -114,9 +114,9 @@ export function SupportForm() {
                 <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-2">
                   <CheckCircle className="w-10 h-10 text-green-600" />
                 </div>
-                <h4 className="text-2xl font-bold text-slate-900">Obrigado pelo apoio!</h4>
+                <h4 className="text-2xl font-bold text-slate-900">Demanda enviada!</h4>
                 <p className="text-slate-600 max-w-sm">
-                  Seu cadastro foi realizado com sucesso. Em breve, nossa equipe entrará em contato.
+                  Sua solicitação foi recebida com sucesso. A equipe da Simone irá analisar as informações e entrará em contato em breve.
                 </p>
               </div>
             ) : (
@@ -180,39 +180,43 @@ export function SupportForm() {
 
                 <div>
                   <label htmlFor="demand" className="block text-sm font-semibold text-slate-700 mb-2">
-                    Sua demanda ou mensagem (Opcional)
+                    Sua demanda, queixa ou solicitação *
                   </label>
                   <textarea
                     id="demand"
                     rows={4}
-                    placeholder="Escreva aqui sua demanda, sugestão ou mensagem para a Simone..."
-                    className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white transition-colors outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 resize-y"
-                    {...register("demand")}
+                    placeholder="Descreva aqui o que está faltando na sua cidade ou qual a sua solicitação para a equipe da Simone..."
+                    className={cn(
+                      "w-full px-4 py-3 rounded-lg border bg-slate-50 focus:bg-white transition-colors outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 resize-y",
+                      errors.demand ? "border-red-500" : "border-slate-200"
+                    )}
+                    {...register("demand", { required: "A descrição da sua demanda é obrigatória" })}
                   ></textarea>
+                  {errors.demand && <p className="text-red-500 text-xs mt-1">{errors.demand.message}</p>}
                 </div>
 
                 <div className="flex items-start gap-3">
                   <input
                     type="checkbox"
                     id="privacyPolicy"
-                    className="mt-1 w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500 cursor-pointer"
+                    className="mt-1 w-4 h-4 rounded border-slate-300 text-accent-500 focus:ring-accent-500 cursor-pointer"
                     {...register("privacyPolicy", { required: true })}
                   />
                   <label htmlFor="privacyPolicy" className="text-sm text-slate-600 leading-relaxed cursor-pointer select-none">
-                    Estou de acordo com a utilização de dados de nossa <a href="/politica-de-privacidade" className="text-brand-600 font-semibold hover:underline" target="_blank" rel="noopener noreferrer">política de privacidade</a>.
+                    Estou de acordo com a utilização de dados de nossa <a href="/politica-de-privacidade" className="text-accent-600 font-semibold hover:underline" target="_blank" rel="noopener noreferrer">política de privacidade</a>.
                   </label>
                 </div>
 
                 <button
                   type="submit"
                   disabled={isSubmitting || !privacyPolicyAccepted}
-                  className="w-full py-4 bg-brand-700 hover:bg-brand-800 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="w-full py-4 bg-gradient-to-r from-accent-500 to-accent-600 text-white font-bold rounded-lg hover:from-accent-600 hover:to-accent-700 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-md hover:shadow-lg hover:shadow-accent-500/20"
                 >
                   {isSubmitting ? (
                     <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                   ) : (
                     <>
-                      Enviar e Entrar para o Time
+                      Enviar Demanda
                       <Send size={18} />
                     </>
                   )}
