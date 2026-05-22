@@ -74,18 +74,22 @@ const bandeiras = [
 
 export function Proposals() {
   return (
-    <section id="proposals" className="py-24 bg-brand-50/50">
-      <div className="container mx-auto px-4 md:px-6">
+    <section id="proposals" className="py-24 bg-[#0B0214] relative overflow-hidden">
+      {/* Abstract Background Shapes */}
+      <div className="absolute top-0 left-0 -translate-y-1/3 -translate-x-1/3 w-[500px] h-[500px] bg-purple-900/10 rounded-full blur-3xl opacity-30 z-0 pointer-events-none" />
+      <div className="absolute bottom-0 right-0 translate-y-1/3 translate-x-1/3 w-[500px] h-[500px] bg-accent-500/5 rounded-full blur-3xl opacity-30 z-0 pointer-events-none" />
+
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
         
         {/* Section 1: Frentes de Atuação */}
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <span className="text-xs font-bold tracking-widest text-accent-500 uppercase px-3 py-1 bg-accent-50 rounded-full border border-accent-100">
+          <span className="text-xs font-bold tracking-widest text-accent-400 uppercase px-3 py-1 bg-white/5 rounded-full border border-white/10 backdrop-blur-md">
             Pilares do Projeto
           </span>
-          <h3 className="text-3xl md:text-5xl font-bold text-brand-800 mt-4 mb-6">
+          <h3 className="text-3xl md:text-5xl font-bold text-white mt-4 mb-6 leading-tight">
             As 4 Frentes de Atuação
           </h3>
-          <p className="text-lg text-slate-600">
+          <p className="text-lg text-slate-300">
             Valores sólidos e compromisso inegociável com a renovação ética no Paraná.
           </p>
         </div>
@@ -98,13 +102,13 @@ export function Proposals() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white rounded-3xl p-8 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 border border-slate-100 group"
+              className="bg-white/5 rounded-3xl p-8 hover:bg-white/[0.08] hover:-translate-y-2 transition-all duration-300 border border-white/5 hover:border-accent-500/30 hover:shadow-2xl hover:shadow-accent-500/5 group"
             >
-              <div className="w-14 h-14 bg-brand-100 rounded-2xl flex items-center justify-center text-brand-700 mb-6 group-hover:bg-accent-500 group-hover:text-white transition-colors duration-300">
+              <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center text-accent-400 mb-6 group-hover:bg-accent-500 group-hover:text-white transition-colors duration-300">
                 <item.icon size={28} strokeWidth={1.5} />
               </div>
-              <h4 className="text-xl font-bold text-slate-900 mb-4">{item.title}</h4>
-              <p className="text-slate-600 leading-relaxed text-sm">
+              <h4 className="text-xl font-bold text-white mb-4">{item.title}</h4>
+              <p className="text-slate-300 leading-relaxed text-sm">
                 {item.description}
               </p>
             </motion.div>
@@ -113,13 +117,13 @@ export function Proposals() {
 
         {/* Section 2: Bandeiras */}
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <span className="text-xs font-bold tracking-widest text-accent-500 uppercase px-3 py-1 bg-accent-50 rounded-full border border-accent-100">
+          <span className="text-xs font-bold tracking-widest text-accent-400 uppercase px-3 py-1 bg-white/5 rounded-full border border-white/10 backdrop-blur-md">
             Nossas Bandeiras
           </span>
-          <h3 className="text-3xl md:text-5xl font-bold text-brand-800 mt-4 mb-6">
+          <h3 className="text-3xl md:text-5xl font-bold text-white mt-4 mb-6 leading-tight">
             O que Simone Martini Defende
           </h3>
-          <p className="text-lg text-slate-600">
+          <p className="text-lg text-slate-300">
             Ações práticas voltadas para a saúde, segurança, educação e o desenvolvimento econômico do nosso povo.
           </p>
         </div>
@@ -132,15 +136,15 @@ export function Proposals() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.5, delay: index * 0.05 }}
-              className="bg-white rounded-3xl p-8 border border-slate-100 hover:border-accent-200 shadow-sm hover:shadow-lg transition-all duration-300"
+              className="bg-white/[0.03] rounded-3xl p-8 border border-white/5 hover:border-accent-500/20 hover:bg-white/[0.06] hover:shadow-xl hover:shadow-accent-500/5 transition-all duration-300"
             >
               <div className="flex gap-4 items-start">
-                <div className="w-12 h-12 bg-accent-50 rounded-2xl flex items-center justify-center text-accent-500 shrink-0">
+                <div className="w-12 h-12 bg-accent-500/10 rounded-2xl flex items-center justify-center text-accent-400 shrink-0">
                   <item.icon size={24} />
                 </div>
                 <div>
-                  <h4 className="text-lg font-bold text-slate-900 mb-2">{item.title}</h4>
-                  <p className="text-slate-600 text-sm leading-relaxed">
+                  <h4 className="text-lg font-bold text-white mb-2">{item.title}</h4>
+                  <p className="text-slate-300 text-sm leading-relaxed">
                     {item.description}
                   </p>
                 </div>

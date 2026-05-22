@@ -59,7 +59,7 @@ export function About() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-slate-800">Disciplina no Esporte</h4>
-                    <p className="text-sm text-slate-500">Praticante de Kickboxing, onde treina diariamente a resiliência, o foco e a determinação que leva para a vida pública.</p>
+                    <p className="text-sm text-slate-500">Foi praticante de Kickboxing, onde treinou diariamente a resiliência, o foco e a determinação que leva para a vida pública.</p>
                   </div>
                 </div>
               </div>

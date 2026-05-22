@@ -7,7 +7,7 @@ export function Hero() {
   return (
     <section
       className="relative min-h-[90vh] flex items-center pt-24 pb-12 overflow-hidden bg-[#0A0112] bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('https://ucezjskktvkhkmtqzdyc.supabase.co/storage/v1/object/public/Arquivos/Imagens/capasite.jpg')" }}
+      style={{ backgroundImage: "url('https://ucezjskktvkhkmtqzdyc.supabase.co/storage/v1/object/public/Arquivos/Imagens/capa%20pr.jpg')" }}
     >
       {/* Abstract Background Shapes */}
       <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[800px] h-[800px] bg-purple-900/10 rounded-full blur-3xl opacity-30 z-0" />
@@ -50,8 +50,24 @@ export function Hero() {
             </div>
           </motion.div>
 
-          {/* Spacer Column to keep Simone Martini on the right side of the background image visible */}
-          <div className="hidden lg:block lg:h-[700px] w-full" />
+          {/* Image Content */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 30 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+            className="flex justify-center items-center w-full relative z-20"
+          >
+            <div className="relative w-full max-w-[300px] sm:max-w-[360px] lg:max-w-none lg:h-[550px] aspect-[4/5] lg:aspect-auto flex justify-center">
+              {/* Subtle background glow behind the portrait */}
+              <div className="absolute inset-0 bg-gradient-to-t from-accent-500/10 to-transparent rounded-full blur-3xl -z-10" />
+              
+              <img
+                src="https://ucezjskktvkhkmtqzdyc.supabase.co/storage/v1/object/public/Arquivos/Imagens/imagem%20principal.png"
+                alt="Simone Martini"
+                className="h-full w-auto object-contain drop-shadow-[0_15px_30px_rgba(255,107,0,0.25)] select-none pointer-events-none"
+              />
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>
