@@ -59,7 +59,7 @@ export function Hero() {
             </h1>
             
             <p className="text-lg md:text-xl text-slate-200 mb-8 leading-relaxed max-w-lg">
-              Advogada, sarandiense e ex-procuradora-geral de Marialva. Uma liderança de ficha limpa pelo partido NOVO para fiscalizar com firmeza e trabalhar pelo desenvolvimento de Sarandi e do nosso estado.
+              Advogada, sarandiense e ex-procuradora-geral municipal. Uma liderança de ficha limpa pelo partido NOVO para fiscalizar com firmeza e trabalhar pelo desenvolvimento do nosso estado.
             </p>
             
             {/* Desktop Button - hidden on mobile */}
