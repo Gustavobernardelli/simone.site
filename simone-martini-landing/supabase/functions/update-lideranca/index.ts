@@ -7,6 +7,7 @@ const corsHeaders = {
 }
 
 const SITUACAO_VALIDAS = ["Fechado com Simone", "Em conversa", "Entrar em contato"]
+const CAMPOS_EDITAVEIS = ["nome", "telefone", "descricao", "cidade", "rua", "numero", "situacao"] as const
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -64,21 +65,28 @@ serve(async (req) => {
       )
     }
 
-    // Responsável só pode editar seus próprios registros
-    if (!isAdmin && responsavelNome) {
-      const { data: existing } = await supabaseClient
-        .from("liderancas")
-        .select("responsavel")
-        .eq("id", id)
-        .maybeSingle()
+    // Busca o registro atual para validar permissão e capturar valores anteriores
+    const { data: atual } = await supabaseClient
+      .from("liderancas")
+      .select("responsavel, nome, telefone, descricao, cidade, rua, numero, situacao, log_edit")
+      .eq("id", id)
+      .maybeSingle()
 
-      if (!existing || existing.responsavel !== responsavelNome) {
-        return new Response(
-          JSON.stringify({ error: "Sem permissão para editar este registro." }),
-          { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 403 }
-        )
-      }
+    if (!atual) {
+      return new Response(
+        JSON.stringify({ error: "Registro não encontrado." }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 404 }
+      )
     }
+
+    if (!isAdmin && responsavelNome && atual.responsavel !== responsavelNome) {
+      return new Response(
+        JSON.stringify({ error: "Sem permissão para editar este registro." }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 403 }
+      )
+    }
+
+    const incoming: Record<string, string | undefined> = { nome, telefone, descricao, cidade, rua, numero, situacao }
 
     const updateData: Record<string, string> = {}
     if (nome !== undefined && nome.trim()) updateData.nome = nome.trim()
@@ -102,6 +110,27 @@ serve(async (req) => {
         JSON.stringify({ error: "Nenhum campo para atualizar." }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
       )
+    }
+
+    // Monta o log apenas com os campos que realmente mudaram
+    const alteracoes: Record<string, { de: string | null; para: string }> = {}
+    for (const campo of CAMPOS_EDITAVEIS) {
+      const novoValor = incoming[campo]
+      if (novoValor !== undefined) {
+        const valorTrimado = novoValor.trim?.() ?? novoValor
+        if (valorTrimado && valorTrimado !== (atual[campo] ?? "")) {
+          alteracoes[campo] = { de: atual[campo] ?? null, para: valorTrimado }
+        }
+      }
+    }
+
+    if (Object.keys(alteracoes).length > 0) {
+      const entradaLog = {
+        data: new Date().toISOString(),
+        editado_por: isAdmin ? "Admin (EquipeSIM)" : responsavelNome,
+        alteracoes,
+      }
+      updateData.log_edit = JSON.stringify([...(atual.log_edit ?? []), entradaLog]) as unknown as string
     }
 
     const { data, error } = await supabaseClient
