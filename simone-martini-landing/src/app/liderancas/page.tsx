@@ -5,6 +5,17 @@ import { useForm } from "react-hook-form";
 import { CheckCircle, ImagePlus, Save, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+const RESPONSAVEIS = [
+  "Antony Estigarriba",
+  "Cesar Fiorucci",
+  "Jessica Machado",
+  "Helton Fernando",
+  "Cesar / Amorin",
+  "Gustavo Bernardelli",
+  "Simone Martini",
+  "Alex Cineus",
+] as const;
+
 const POTENCIAL_OPCOES = [
   { value: "solo", label: "Apoiador solo" },
   { value: "familiar", label: "Núcleo familiar" },
@@ -326,13 +337,17 @@ export default function LiderancasPage() {
               <label htmlFor="responsavel" className="block text-sm font-semibold text-slate-700 mb-2">
                 Responsável
               </label>
-              <input
+              <select
                 id="responsavel"
-                type="text"
-                placeholder="Nome do responsável pelo contato"
                 className={inputClass()}
+                defaultValue=""
                 {...register("responsavel")}
-              />
+              >
+                <option value="">Selecione um responsável</option>
+                {RESPONSAVEIS.map((nome) => (
+                  <option key={nome} value={nome}>{nome}</option>
+                ))}
+              </select>
             </div>
 
             <div>

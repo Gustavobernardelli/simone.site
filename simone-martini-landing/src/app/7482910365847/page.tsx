@@ -7,11 +7,14 @@ import type { LiderancaMarker } from "@/components/LiderancasMap";
 
 const LiderancasMap = dynamic(
   () => import("@/components/LiderancasMap").then((m) => m.LiderancasMap),
-  { ssr: false, loading: () => (
-    <div className="w-full min-h-[420px] rounded-2xl border border-slate-200 bg-slate-100 flex items-center justify-center">
-      <p className="text-sm text-slate-500">Carregando mapa...</p>
-    </div>
-  )}
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full min-h-[420px] rounded-2xl border border-slate-200 bg-slate-100 flex items-center justify-center">
+        <p className="text-sm text-slate-500">Carregando mapa...</p>
+      </div>
+    ),
+  }
 );
 import {
   Lock,
@@ -27,6 +30,10 @@ import {
   ChevronUp,
   ChevronDown,
   ChevronsUpDown,
+  Pencil,
+  Save,
+  LogOut,
+  User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -48,14 +55,36 @@ type Lideranca = {
   lng: number | null;
 };
 
+type Responsavel = { id: string; nome: string; email: string };
+
+type Session = {
+  tipo: "admin" | "responsavel";
+  responsavel?: Responsavel;
+  credencial: string;
+  senha: string;
+};
+
+type EditForm = {
+  nome: string;
+  telefone: string;
+  descricao: string;
+  situacao: string;
+};
+
 const POTENCIAL_LABELS: Record<string, string> = {
-  "solo": "Apoiador solo",
-  "familiar": "Núcleo familiar",
+  solo: "Apoiador solo",
+  familiar: "Núcleo familiar",
   "30-50": "30 - 50 pessoas",
   "50-80": "50 - 80 pessoas",
   "80-120": "80 - 120 pessoas",
   "120+": "120 +",
 };
+
+const SITUACAO_OPCOES = [
+  "Fechado com Simone",
+  "Em conversa",
+  "Entrar em contato",
+] as const;
 
 const SITUACAO_COLORS: Record<string, string> = {
   "Fechado com Simone": "bg-emerald-50 text-emerald-700 border-emerald-200",
@@ -63,16 +92,20 @@ const SITUACAO_COLORS: Record<string, string> = {
   "Entrar em contato": "bg-amber-50 text-amber-700 border-amber-200",
 };
 
+const inputClass = "w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white transition-colors outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500";
+
 export default function PainelLiderancasPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [authToken, setAuthToken] = useState("");
+  const [session, setSession] = useState<Session | null>(null);
+  const [credencial, setCredencial] = useState("");
+  const [senha, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [liderancas, setLiderancas] = useState<Lideranca[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selected, setSelected] = useState<Lideranca | null>(null);
+  const [editing, setEditing] = useState<Lideranca | null>(null);
+  const [editForm, setEditForm] = useState<EditForm>({ nome: "", telefone: "", descricao: "", situacao: "" });
+  const [saving, setSaving] = useState(false);
   const [mapMarkers, setMapMarkers] = useState<LiderancaMarker[]>([]);
   const [mapLoading, setMapLoading] = useState(false);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
@@ -92,44 +125,81 @@ export default function PainelLiderancasPage() {
     }
   };
 
-  const handleLogin = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
+  const fetchData = async (sess: Session) => {
     setLoading(true);
     setError("");
-
-    const token = btoa(`${username}:${password}`);
-
     try {
       const response = await fetch(
-        "https://ucezjskktvkhkmtqzdyc.supabase.co/functions/v1/get-liderancas",
+        "https://ucezjskktvkhkmtqzdyc.supabase.co/functions/v1/painel-liderancas",
         {
-          headers: { Authorization: `Basic ${token}` },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ credencial: sess.credencial, senha: sess.senha }),
         }
       );
-
       const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "Erro ao autenticar");
-      }
-
-      setAuthToken(token);
+      if (!response.ok) throw new Error(result.error || "Erro ao carregar dados");
       setLiderancas(result.data);
-      setIsAuthenticated(true);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Credenciais inválidas";
-      setError(message);
+      setError(err instanceof Error ? err.message : "Erro ao carregar dados");
     } finally {
       setLoading(false);
     }
   };
 
-  const refreshData = () => handleLogin();
+  const handleLogin = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch(
+        "https://ucezjskktvkhkmtqzdyc.supabase.co/functions/v1/painel-liderancas",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ credencial: credencial.trim(), senha }),
+        }
+      );
+
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Credenciais inválidas");
+
+      const sess: Session = {
+        tipo: result.tipo,
+        responsavel: result.responsavel,
+        credencial: credencial.trim(),
+        senha,
+      };
+      setSession(sess);
+      setLiderancas(result.data);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Credenciais inválidas");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const refreshData = () => {
+    if (session) fetchData(session);
+  };
+
+  const handleLogout = () => {
+    setSession(null);
+    setLiderancas([]);
+    setCredencial("");
+    setSenha("");
+    setError("");
+    setSelected(null);
+    setEditing(null);
+  };
 
   const handleDelete = async (id: string) => {
+    if (!session || session.tipo !== "admin") return;
     if (!confirm("Excluir este registro permanentemente?")) return;
     setDeletingId(id);
     try {
+      const authToken = btoa(`${session.credencial}:${session.senha}`);
       const response = await fetch(
         "https://ucezjskktvkhkmtqzdyc.supabase.co/functions/v1/delete-lideranca",
         {
@@ -151,6 +221,53 @@ export default function PainelLiderancasPage() {
       alert(err instanceof Error ? err.message : "Erro ao excluir registro");
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  const openEdit = (l: Lideranca) => {
+    setEditing(l);
+    setEditForm({
+      nome: l.nome,
+      telefone: l.telefone,
+      descricao: l.descricao,
+      situacao: l.situacao,
+    });
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editing || !session) return;
+    setSaving(true);
+    try {
+      const authToken = btoa(`${session.credencial}:${session.senha}`);
+      const response = await fetch(
+        "https://ucezjskktvkhkmtqzdyc.supabase.co/functions/v1/update-lideranca",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${authToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: editing.id,
+            nome: editForm.nome,
+            telefone: editForm.telefone,
+            descricao: editForm.descricao,
+            situacao: editForm.situacao,
+          }),
+        }
+      );
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Erro ao salvar");
+
+      setLiderancas((prev) =>
+        prev.map((l) => (l.id === editing.id ? { ...l, ...result.data } : l))
+      );
+      if (selected?.id === editing.id) setSelected({ ...selected, ...result.data });
+      setEditing(null);
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : "Erro ao salvar alterações");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -207,7 +324,7 @@ export default function PainelLiderancasPage() {
   };
 
   useEffect(() => {
-    if (!isAuthenticated || filtered.length === 0) {
+    if (!session || filtered.length === 0) {
       setMapMarkers([]);
       return;
     }
@@ -221,16 +338,15 @@ export default function PainelLiderancasPage() {
       for (const l of filtered) {
         if (cancelled) break;
 
-        // Use coordinates stored at registration time when available
         if (l.lat && l.lng) {
           markers.push({ id: l.id, nome: l.nome, responsavel: l.responsavel, lat: l.lat, lng: l.lng });
           continue;
         }
 
-        // Fall back to on-demand geocoding for legacy records
-        const enderecoParaGeocode = l.rua && l.numero && l.cidade
-          ? `${l.rua}, ${l.numero}, ${l.cidade}`
-          : l.endereco;
+        const enderecoParaGeocode =
+          l.rua && l.numero && l.cidade
+            ? `${l.rua}, ${l.numero}, ${l.cidade}`
+            : l.endereco;
         const coords = await geocodeAddress(enderecoParaGeocode);
         if (coords) {
           markers.push({ id: l.id, nome: l.nome, responsavel: l.responsavel, lat: coords.lat, lng: coords.lng });
@@ -247,12 +363,12 @@ export default function PainelLiderancasPage() {
     return () => {
       cancelled = true;
     };
-  }, [isAuthenticated, filtered, searchTerm]);
+  }, [session, filtered, searchTerm]);
 
   return (
     <main className="flex min-h-screen flex-col bg-slate-50">
       <div className="flex-1 w-full px-2 py-6 max-w-[1800px] mx-auto">
-        {!isAuthenticated ? (
+        {!session ? (
           <div className="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-sm border border-slate-100 mt-12">
             <div className="flex flex-col items-center text-center mb-8">
               <div className="w-16 h-16 bg-brand-50 rounded-full flex items-center justify-center mb-4 text-brand-600">
@@ -267,13 +383,14 @@ export default function PainelLiderancasPage() {
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Usuário
+                  Usuário / E-mail
                 </label>
                 <input
                   type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white transition-colors outline-none focus:ring-2 focus:ring-brand-500/20"
+                  value={credencial}
+                  onChange={(e) => setCredencial(e.target.value)}
+                  className={inputClass}
+                  placeholder="E-mail ou usuário admin"
                   required
                 />
               </div>
@@ -283,9 +400,9 @@ export default function PainelLiderancasPage() {
                 </label>
                 <input
                   type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white transition-colors outline-none focus:ring-2 focus:ring-brand-500/20"
+                  value={senha}
+                  onChange={(e) => setSenha(e.target.value)}
+                  className={inputClass}
                   required
                 />
               </div>
@@ -309,10 +426,24 @@ export default function PainelLiderancasPage() {
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
               <div>
-                <h1 className="text-2xl font-bold text-slate-900">Painel de Lideranças</h1>
-                <p className="text-slate-500 text-sm mt-0.5">
-                  Cadastros recebidos pelo formulário de lideranças.
-                </p>
+                <h1 className="text-2xl font-bold text-slate-900">
+                  {session.tipo === "responsavel"
+                    ? `Minhas Lideranças`
+                    : "Painel de Lideranças"}
+                </h1>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <User size={13} className="text-slate-400" />
+                  <p className="text-slate-500 text-sm">
+                    {session.tipo === "responsavel"
+                      ? session.responsavel?.nome
+                      : "Administrador"}
+                  </p>
+                  {session.tipo === "responsavel" && (
+                    <span className="text-[10px] bg-brand-50 text-brand-700 border border-brand-200 px-2 py-0.5 rounded-full font-medium">
+                      {liderancas.length} cadastro{liderancas.length !== 1 ? "s" : ""}
+                    </span>
+                  )}
+                </div>
               </div>
               <div className="flex items-center gap-3 w-full md:w-auto">
                 <div className="relative flex-1 md:w-64">
@@ -335,11 +466,18 @@ export default function PainelLiderancasPage() {
                 >
                   <RefreshCw size={20} className={loading ? "animate-spin" : ""} />
                 </button>
+                <button
+                  onClick={handleLogout}
+                  className="p-2 bg-white border border-slate-200 rounded-lg hover:bg-red-50 hover:text-red-600 hover:border-red-200 text-slate-600 transition-colors"
+                  title="Sair"
+                >
+                  <LogOut size={20} />
+                </button>
               </div>
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-start">
-              {/* Coluna esquerda: tabela */}
+              {/* Tabela */}
               <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden min-w-0">
                 <div className="px-3 py-2 border-b border-slate-100 bg-slate-50">
                   <h2 className="text-xs font-semibold text-slate-700">Registros</h2>
@@ -355,7 +493,9 @@ export default function PainelLiderancasPage() {
                             { key: "telefone", label: "Telefone" },
                             { key: "potencial_influencia", label: "Potencial" },
                             { key: "situacao", label: "Situação" },
-                            { key: "responsavel", label: "Responsável" },
+                            ...(session.tipo === "admin"
+                              ? [{ key: "responsavel" as SortKey, label: "Responsável" }]
+                              : []),
                           ] as { key: SortKey; label: string }[]
                         ).map(({ key, label }) => (
                           <th
@@ -366,7 +506,11 @@ export default function PainelLiderancasPage() {
                             <span className="flex items-center gap-0.5">
                               {label}
                               {sortKey === key ? (
-                                sortDir === "asc" ? <ChevronUp size={10} className="text-brand-600" /> : <ChevronDown size={10} className="text-brand-600" />
+                                sortDir === "asc" ? (
+                                  <ChevronUp size={10} className="text-brand-600" />
+                                ) : (
+                                  <ChevronDown size={10} className="text-brand-600" />
+                                )
                               ) : (
                                 <ChevronsUpDown size={10} className="opacity-30" />
                               )}
@@ -374,13 +518,16 @@ export default function PainelLiderancasPage() {
                           </th>
                         ))}
                         <th className="px-2 py-1.5 font-semibold text-center">Ver</th>
-                        <th className="px-2 py-1.5 font-semibold text-center">Del</th>
+                        <th className="px-2 py-1.5 font-semibold text-center">Editar</th>
+                        {session.tipo === "admin" && (
+                          <th className="px-2 py-1.5 font-semibold text-center">Del</th>
+                        )}
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                       {filtered.length === 0 ? (
                         <tr>
-                          <td colSpan={8} className="p-8 text-center text-slate-500 text-xs">
+                          <td colSpan={9} className="p-8 text-center text-slate-500 text-xs">
                             Nenhuma liderança encontrada.
                           </td>
                         </tr>
@@ -394,7 +541,9 @@ export default function PainelLiderancasPage() {
                               highlightedId === l.id && "bg-brand-50/60"
                             )}
                           >
-                            <td className="px-2 py-1.5 font-medium text-slate-900 text-[11px] max-w-[130px] truncate">{l.nome}</td>
+                            <td className="px-2 py-1.5 font-medium text-slate-900 text-[11px] max-w-[130px] truncate">
+                              {l.nome}
+                            </td>
                             <td className="px-2 py-1.5 text-slate-600 text-[11px] whitespace-nowrap">
                               {getCidade(l)}
                             </td>
@@ -424,9 +573,11 @@ export default function PainelLiderancasPage() {
                                 {l.situacao}
                               </span>
                             </td>
-                            <td className="px-2 py-1.5 text-slate-600 text-[11px] max-w-[100px] truncate">
-                              {l.responsavel || "—"}
-                            </td>
+                            {session.tipo === "admin" && (
+                              <td className="px-2 py-1.5 text-slate-600 text-[11px] max-w-[100px] truncate">
+                                {l.responsavel || "—"}
+                              </td>
+                            )}
                             <td className="px-2 py-1.5 text-center">
                               <button
                                 onClick={(e) => {
@@ -435,7 +586,7 @@ export default function PainelLiderancasPage() {
                                   setHighlightedId(l.id);
                                 }}
                                 className="p-1 bg-slate-100 hover:bg-brand-100 text-slate-600 hover:text-brand-700 rounded transition-colors inline-flex"
-                                title="Visualizar liderança"
+                                title="Visualizar"
                               >
                                 <Eye size={13} />
                               </button>
@@ -444,15 +595,29 @@ export default function PainelLiderancasPage() {
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleDelete(l.id);
+                                  openEdit(l);
                                 }}
-                                disabled={deletingId === l.id}
-                                className="p-1 bg-red-50 hover:bg-red-100 text-red-500 hover:text-red-700 rounded transition-colors inline-flex disabled:opacity-50"
-                                title="Excluir registro"
+                                className="p-1 bg-slate-100 hover:bg-amber-100 text-slate-600 hover:text-amber-700 rounded transition-colors inline-flex"
+                                title="Editar"
                               >
-                                <Trash2 size={13} />
+                                <Pencil size={13} />
                               </button>
                             </td>
+                            {session.tipo === "admin" && (
+                              <td className="px-2 py-1.5 text-center">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDelete(l.id);
+                                  }}
+                                  disabled={deletingId === l.id}
+                                  className="p-1 bg-red-50 hover:bg-red-100 text-red-500 hover:text-red-700 rounded transition-colors inline-flex disabled:opacity-50"
+                                  title="Excluir"
+                                >
+                                  <Trash2 size={13} />
+                                </button>
+                              </td>
+                            )}
                           </tr>
                         ))
                       )}
@@ -461,7 +626,7 @@ export default function PainelLiderancasPage() {
                 </div>
               </div>
 
-              {/* Coluna direita: mapa */}
+              {/* Mapa */}
               <div className="min-w-0 xl:sticky xl:top-6">
                 <div className="px-3 py-2 border border-slate-100 border-b-0 rounded-t-xl bg-slate-50 flex items-center justify-between gap-2">
                   <h2 className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
@@ -490,6 +655,7 @@ export default function PainelLiderancasPage() {
         )}
       </div>
 
+      {/* Modal: Detalhes */}
       {selected && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200">
@@ -542,9 +708,7 @@ export default function PainelLiderancasPage() {
                 </div>
                 <div>
                   <p className="text-xs text-slate-500 mb-1">Responsável</p>
-                  <p className="font-semibold text-slate-900">
-                    {selected.responsavel || "—"}
-                  </p>
+                  <p className="font-semibold text-slate-900">{selected.responsavel || "—"}</p>
                 </div>
                 <div>
                   <p className="text-xs text-slate-500 mb-1">Data de cadastro</p>
@@ -583,12 +747,7 @@ export default function PainelLiderancasPage() {
                     <ImageIcon size={14} />
                     Imagem anexada
                   </p>
-                  <a
-                    href={selected.imagem_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block"
-                  >
+                  <a href={selected.imagem_url} target="_blank" rel="noopener noreferrer" className="block">
                     <img
                       src={selected.imagem_url}
                       alt={`Foto de ${selected.nome}`}
@@ -602,6 +761,87 @@ export default function PainelLiderancasPage() {
         </div>
       )}
 
+      {/* Modal: Editar */}
+      {editing && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between p-6 border-b border-slate-100">
+              <h2 className="text-xl font-bold text-slate-900">Editar Liderança</h2>
+              <button
+                onClick={() => setEditing(null)}
+                className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Nome</label>
+                <input
+                  type="text"
+                  value={editForm.nome}
+                  onChange={(e) => setEditForm((f) => ({ ...f, nome: e.target.value }))}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Telefone</label>
+                <input
+                  type="text"
+                  value={editForm.telefone}
+                  onChange={(e) => setEditForm((f) => ({ ...f, telefone: e.target.value }))}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Situação</label>
+                <select
+                  value={editForm.situacao}
+                  onChange={(e) => setEditForm((f) => ({ ...f, situacao: e.target.value }))}
+                  className={inputClass}
+                >
+                  {SITUACAO_OPCOES.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Descrição</label>
+                <textarea
+                  rows={4}
+                  value={editForm.descricao}
+                  onChange={(e) => setEditForm((f) => ({ ...f, descricao: e.target.value }))}
+                  className={`${inputClass} resize-y`}
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 p-6 pt-0">
+              <button
+                onClick={handleSaveEdit}
+                disabled={saving}
+                className="flex-1 py-3 bg-brand-700 hover:bg-brand-800 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
+              >
+                {saving ? (
+                  <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <Save size={16} />
+                    Salvar alterações
+                  </>
+                )}
+              </button>
+              <button
+                onClick={() => setEditing(null)}
+                className="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg transition-colors border border-slate-200"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
