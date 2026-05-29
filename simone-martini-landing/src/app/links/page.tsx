@@ -12,19 +12,14 @@ const links = [
     alt: "Site Oficial",
   },
   {
-    image: "https://ucezjskktvkhkmtqzdyc.supabase.co/storage/v1/object/public/Arquivos/Imagens/link3.png",
-    href: "/#enviar_demanda",
-    alt: "Enviar Demanda",
-  },
-  {
     image: "https://ucezjskktvkhkmtqzdyc.supabase.co/storage/v1/object/public/Arquivos/Imagens/link4.png",
-    href: "https://wa.me/5500000000000",
+    href: "https://wa.me/5544991443398?text=Ol%C3%A1%2C%20gostaria%20de%20falar%20com%20a%20equipe%20da%20Simone%20Martini",
     alt: "Fale Conosco",
   },
   {
     image: "https://ucezjskktvkhkmtqzdyc.supabase.co/storage/v1/object/public/Arquivos/Imagens/link5.png",
-    href: "#",
-    alt: "Link 5",
+    href: "https://queroapoiar.com.br/simone-martini",
+    alt: "Vakinha",
   },
 ];
 
@@ -63,7 +58,7 @@ export default function LinksPage() {
 
         {/* Image links */}
         <div className="w-full flex flex-col gap-4 items-center">
-          {links.map((link, i) => (
+          {links.map((link) => (
             <>
               <a
                 key={link.alt}
