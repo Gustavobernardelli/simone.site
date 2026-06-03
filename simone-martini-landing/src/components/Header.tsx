@@ -51,6 +51,14 @@ export function Header() {
             </a>
           ))}
           <a
+            href="https://queroapoiar.com.br/simone-martini"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-6 py-2.5 bg-white/10 border border-white/20 text-white text-sm font-bold rounded-full hover:bg-white/20 transition-all duration-300"
+          >
+            Vaquinha Online
+          </a>
+          <a
             href="#enviar_demanda"
             className="px-6 py-2.5 bg-gradient-to-r from-accent-500 to-accent-600 text-white text-sm font-bold rounded-full hover:from-accent-600 hover:to-accent-700 shadow-md hover:shadow-lg hover:shadow-accent-500/20 transition-all transform hover:-translate-y-0.5 duration-300"
           >
@@ -81,6 +89,15 @@ export function Header() {
               {link.name}
             </a>
           ))}
+          <a
+            href="https://queroapoiar.com.br/simone-martini"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full text-center px-6 py-3 bg-white/10 border border-white/20 text-white text-base font-bold rounded-md hover:bg-white/20 transition-all"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Vaquinha Online
+          </a>
           <a
             href="#enviar_demanda"
             className="w-full text-center px-6 py-3 bg-gradient-to-r from-accent-500 to-accent-600 text-white text-base font-bold rounded-md hover:from-accent-600 hover:to-accent-700 mt-2 transition-all shadow-md active:scale-95"
