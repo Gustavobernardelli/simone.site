@@ -100,7 +100,7 @@ export default function ReuniaoLideres() {
           <div className="flex flex-wrap justify-center gap-4 mt-10">
             <div className="flex items-center gap-2.5 bg-white/10 rounded-xl px-5 py-3">
               <Calendar size={20} className="text-accent-400" />
-              <span className="font-semibold text-white">18 de junho de 2026</span>
+              <span className="font-semibold text-white">16 de junho de 2026</span>
             </div>
             <div className="flex items-center gap-2.5 bg-white/10 rounded-xl px-5 py-3">
               <Clock size={20} className="text-accent-400" />
@@ -153,7 +153,7 @@ export default function ReuniaoLideres() {
 
                 <div className="bg-slate-50 rounded-xl p-4 text-sm text-slate-600 border border-slate-100">
                   <p className="font-semibold mb-1">Detalhes do evento</p>
-                  <p>18 de junho de 2026 · 19h00</p>
+                  <p>16 de junho de 2026 · 19h00</p>
                   <p>Garbo Eventos</p>
                 </div>
               </div>
