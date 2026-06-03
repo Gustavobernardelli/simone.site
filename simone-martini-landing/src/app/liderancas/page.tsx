@@ -14,6 +14,9 @@ const RESPONSAVEIS = [
   "Gustavo Bernardelli",
   "Simone Martini",
   "Alex Cineus",
+  "Miriam",
+  "Silvania",
+  "Bianca",
 ] as const;
 
 const POTENCIAL_OPCOES = [
