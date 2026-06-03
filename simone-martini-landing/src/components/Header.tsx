@@ -19,7 +19,6 @@ export function Header() {
   const navLinks = [
     { name: "Quem Sou", href: "#about" },
     { name: "Bandeiras", href: "#proposals" },
-    { name: "Enviar Demanda", href: "#enviar_demanda" },
   ];
 
   return (
