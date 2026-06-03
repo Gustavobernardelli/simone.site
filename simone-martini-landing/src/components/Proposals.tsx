@@ -1,41 +1,39 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { 
-  Sparkles, 
-  UserCheck, 
-  ShieldCheck, 
-  MapPin, 
-  HeartHandshake, 
-  Briefcase, 
-  GraduationCap, 
-  Activity, 
-  ShieldAlert, 
-  Sprout, 
-  Road,
-  ArrowRight
+import {
+  UserCheck,
+  ShieldCheck,
+  GraduationCap,
+  Activity,
+  PawPrint,
 } from "lucide-react";
 
 const frentes = [
   {
-    icon: Sparkles,
-    title: "Renovação Política",
-    description: "Gestão pública eficiente, com rigor técnico e transparência fiscal, sob a bandeira de integridade do partido NOVO.",
+    icon: UserCheck,
+    title: "Mulher na Política",
+    description: "A primeira deputada de Sarandi na ALEP — saúde da mulher, combate à violência doméstica e representatividade feminina.",
   },
   {
-    icon: UserCheck,
-    title: "Representatividade Feminina",
-    description: "Mulheres qualificadas e com propósito ocupando a política. Única pré-candidata a deputada estadual saindo de Sarandi.",
+    icon: GraduationCap,
+    title: "Educação",
+    description: "Creches, ensino médio de qualidade, educação profissionalizante e valorização do professor no interior do PR.",
   },
   {
     icon: ShieldCheck,
-    title: "Combate à Corrupção",
-    description: "Foco absoluto na ética e na transparência de recursos, com apoio e forte alinhamento com Sergio Moro e Deltan Dallagnol.",
+    title: "Segurança",
+    description: "Presença do Estado nos bairros periféricos, combate ao tráfico e segurança escolar e para a mulher.",
   },
   {
-    icon: MapPin,
-    title: "A Voz de Sarandi na ALEP",
-    description: "Uma reparação histórica: eleger pela primeira vez uma deputada de Sarandi para lutar diretamente por nossa região na Assembleia.",
+    icon: Activity,
+    title: "Saúde Pública",
+    description: "Fim das filas do SUS, UBSs funcionando de verdade, saúde mental e atenção ao idoso no interior do Paraná.",
+  },
+  {
+    icon: PawPrint,
+    title: "Proteção Animal",
+    description: "Castração, combate aos maus-tratos, apoio às ONGs protetoras e política estadual de abrigo e adoção.",
   },
 ];
 
@@ -88,14 +86,14 @@ export function Proposals() {
               Pilares do Projeto
             </span>
             <h3 className="text-3xl md:text-5xl font-bold text-white mt-4 mb-6 leading-tight">
-              As 4 Frentes de Atuação
+              As 5 Bandeiras de Atuação
             </h3>
             <p className="text-lg text-slate-300">
-              Valores sólidos e compromisso inegociável com a renovação ética no Paraná.
+              Compromisso com as causas que Sarandi e o Paraná precisam de uma voz forte na Assembleia.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
             {frentes.map((item, index) => (
               <motion.div
                 key={index}
