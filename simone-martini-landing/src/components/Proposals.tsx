@@ -4,8 +4,12 @@ import { motion } from "framer-motion";
 import {
   UserCheck,
   ShieldCheck,
+  HeartHandshake,
   GraduationCap,
   Activity,
+  ShieldAlert,
+  Sprout,
+  Road,
   PawPrint,
 } from "lucide-react";
 
