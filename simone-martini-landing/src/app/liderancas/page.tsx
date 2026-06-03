@@ -6,7 +6,7 @@ import { CheckCircle, ImagePlus, Save, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const RESPONSAVEIS = [
-  "Antony Estigarriba",
+  "Antony Estigarribia",
   "Cesar Fiorucci",
   "Jessica Machado",
   "Helton Fernando",
