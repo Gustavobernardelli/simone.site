@@ -9,7 +9,7 @@ const HEADER_IMG = "https://ucezjskktvkhkmtqzdyc.supabase.co/storage/v1/object/p
 type ContadorData = { inscritos: number; total: number; percentual: number };
 type FormState = "idle" | "loading" | "success" | "error";
 
-export default function ReuniaoLideres() {
+export default function EncontroNovo() {
   const [contador, setContador] = useState<ContadorData | null>(null);
   const [nome, setNome] = useState("");
   const [telefone, setTelefone] = useState("");
@@ -78,7 +78,7 @@ export default function ReuniaoLideres() {
         <div className="container mx-auto px-6 pt-10 max-w-2xl">
           <img
             src={HEADER_IMG}
-            alt="Reunião de Líderes"
+            alt="NOVO Rumo - Simone Martini"
             className="w-full rounded-2xl object-cover"
           />
         </div>
@@ -89,13 +89,13 @@ export default function ReuniaoLideres() {
             Convite Exclusivo
           </div>
 
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4">
-            Reunião de{" "}
-            <span className="text-accent-400">Líderes</span>
-          </h1>
           <p className="text-lg text-white/60 mb-2 font-medium">
-            com Simone Martini · Partido NOVO Sarandi PR
+            Simone Martini pré-candidata a Deputada Estadual
           </p>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4">
+            <span className="text-accent-400">NOVO</span>{" "}
+            RUMO
+          </h1>
 
           <div className="flex flex-wrap justify-center gap-4 mt-10">
             <div className="flex items-center gap-2.5 bg-white/10 rounded-xl px-5 py-3">
