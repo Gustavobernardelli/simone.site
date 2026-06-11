@@ -70,9 +70,13 @@ serve(async (req) => {
         )
       }
 
+      const nowUtc = new Date()
+      const saoPauloTime = new Date(nowUtc.getTime() - 3 * 60 * 60 * 1000)
+      const created_at = saoPauloTime.toISOString()
+
       const { data, error } = await supabase
         .from('reuniao_16')
-        .insert([{ nome, telefone, email }])
+        .insert([{ nome, telefone, email, created_at }])
         .select()
 
       if (error) throw error
@@ -94,7 +98,7 @@ serve(async (req) => {
 
       const { data, error } = await supabase
         .from('reuniao_16')
-        .select('*')
+        .select('id, nome, telefone, email, confirmado, n_convidados, created_at')
         .order('created_at', { ascending: true })
 
       if (error) throw error
@@ -105,7 +109,7 @@ serve(async (req) => {
       )
     }
 
-    // PATCH → atualizar confirmado (protegido)
+    // PATCH → atualizar confirmado e n_convidados (protegido)
     if (req.method === 'PATCH') {
       if (!checkAuth(req)) {
         return new Response(
@@ -114,7 +118,8 @@ serve(async (req) => {
         )
       }
 
-      const { id, confirmado } = await req.json()
+      const body = await req.json()
+      const { id, confirmado, n_convidados } = body
 
       if (!id || confirmado === undefined) {
         return new Response(
@@ -123,9 +128,14 @@ serve(async (req) => {
         )
       }
 
+      const updatePayload: Record<string, unknown> = { confirmado }
+      if (n_convidados !== undefined && n_convidados !== null) {
+        updatePayload.n_convidados = n_convidados
+      }
+
       const { data, error } = await supabase
         .from('reuniao_16')
-        .update({ confirmado })
+        .update(updatePayload)
         .eq('id', id)
         .select()
 
