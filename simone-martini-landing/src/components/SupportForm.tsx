@@ -1,6 +1,12 @@
 "use client";
 
 import { useState } from "react";
+
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+  }
+}
 import { useForm } from "react-hook-form";
 import { Send, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -42,6 +48,7 @@ export function SupportForm() {
 
       setIsSubmitted(true);
       reset();
+      window.fbq?.("track", "Lead");
       
       // Hide success message after 5 seconds
       setTimeout(() => setIsSubmitted(false), 5000);
