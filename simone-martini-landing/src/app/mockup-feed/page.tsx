@@ -77,18 +77,45 @@ function drawCenteredText(
   ctx.restore();
 }
 
-async function downloadAll(files: File[], fallbackName: string) {
-  for (let i = 0; i < files.length; i++) {
-    const blobUrl = URL.createObjectURL(files[i]);
+function isMobileDevice() {
+  if (typeof navigator === "undefined") return false;
+  const touch = navigator.maxTouchPoints > 0;
+  const mobileUA = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  return touch && mobileUA;
+}
+
+function downloadFiles(files: File[], fallbackName: string) {
+  files.forEach((file, i) => {
+    const blobUrl = URL.createObjectURL(file);
     const a = document.createElement("a");
     a.href = blobUrl;
-    a.download = files.length === 1 ? fallbackName : files[i].name;
+    a.download = files.length === 1 ? fallbackName : file.name;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(blobUrl), 4000);
-    if (i < files.length - 1) await new Promise((r) => setTimeout(r, 350));
+  });
+}
+
+// No celular usamos o share sheet nativo (permite "Salvar imagem" direto na
+// galeria de fotos). No desktop isso abriria o painel de compartilhamento do
+// SO, então lá sempre baixamos o arquivo direto.
+async function saveFiles(files: File[], shareTitle: string, fallbackName: string) {
+  const nav = navigator as Navigator & {
+    canShare?: (data?: ShareData) => boolean;
+    share?: (data: ShareData) => Promise<void>;
+  };
+
+  if (isMobileDevice() && nav.share && nav.canShare?.({ files })) {
+    try {
+      await nav.share({ files, title: shareTitle });
+      return;
+    } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") return;
+    }
   }
+
+  downloadFiles(files, fallbackName);
 }
 
 export default function MockupFeed() {
@@ -376,7 +403,7 @@ export default function MockupFeed() {
           ? "capa-simone-martini.png"
           : `feed-${index}-simone-martini.png`;
       const file = await dataUrlToFile(item.url, name);
-      await downloadAll([file], name);
+      await saveFiles([file], "Feed - Simone Martini", name);
     } catch {
       window.open(item.url, "_blank");
       setSaveError("Toque e segure na imagem que abriu para salvá-la na galeria.");
@@ -397,7 +424,7 @@ export default function MockupFeed() {
           )
         )
       );
-      await downloadAll(files, "feed-simone-martini.png");
+      await saveFiles(files, "Feed - Simone Martini", "feed-simone-martini.png");
     } catch {
       setSaveError("Não foi possível baixar todas de uma vez. Baixe uma por uma abaixo.");
     } finally {
