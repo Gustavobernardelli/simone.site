@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "simone-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "simone-martini-landing", "run", "dev", "--", "-p", "51888"],
+      "port": 51888
+    }
+  ]
+}
