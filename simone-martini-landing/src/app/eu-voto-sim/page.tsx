@@ -38,6 +38,8 @@ export default function EuVotoSim() {
   const [stageSize, setStageSize] = useState(320);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
   const [error, setError] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -215,7 +217,48 @@ export default function EuVotoSim() {
     setStep("idle");
     setResultUrl(null);
     setNatural(null);
+    setSaveError("");
     openFilePicker();
+  }
+
+  async function handleSalvar() {
+    if (!resultUrl || saving) return;
+    setSaveError("");
+    setSaving(true);
+    try {
+      const blob = await (await fetch(resultUrl)).blob();
+      const file = new File([blob], "eu-voto-sim-simone-martini.png", { type: "image/png" });
+
+      const nav = navigator as Navigator & {
+        canShare?: (data?: ShareData) => boolean;
+        share?: (data: ShareData) => Promise<void>;
+      };
+
+      if (nav.share && nav.canShare?.({ files: [file] })) {
+        try {
+          await nav.share({ files: [file], title: "Eu Voto Sim - Simone Martini" });
+          return;
+        } catch (err) {
+          if (err instanceof Error && err.name === "AbortError") return;
+          // se o compartilhamento falhar por outro motivo, cai para o download tradicional
+        }
+      }
+
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = "eu-voto-sim-simone-martini.png";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 2000);
+    } catch {
+      // último recurso: abre a imagem em nova aba para salvar manualmente (toque e segure)
+      window.open(resultUrl, "_blank");
+      setSaveError("Toque e segure na imagem que abriu para salvá-la na galeria.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   function closeModal() {
@@ -448,8 +491,10 @@ export default function EuVotoSim() {
             <img
               src={resultUrl}
               alt="Foto de perfil com moldura Eu Voto Sim"
-              className="w-full max-w-[320px] mx-auto rounded-2xl shadow-xl mb-6"
+              className="w-full max-w-[320px] mx-auto rounded-2xl shadow-xl mb-4"
             />
+
+            {saveError && <p className="text-accent-600 text-sm mb-4">{saveError}</p>}
 
             <div className="flex flex-col sm:flex-row gap-3">
               <button
@@ -459,15 +504,20 @@ export default function EuVotoSim() {
               >
                 Trocar foto
               </button>
-              <a
-                href={resultUrl}
-                download="eu-voto-sim-simone-martini.png"
-                className="flex-1 py-3.5 font-bold rounded-xl text-white flex items-center justify-center gap-2 transition-all"
+              <button
+                type="button"
+                onClick={handleSalvar}
+                disabled={saving}
+                className="flex-1 py-3.5 font-bold rounded-xl text-white flex items-center justify-center gap-2 transition-all disabled:opacity-70"
                 style={{ background: "linear-gradient(135deg, #ff6b00 0%, #ea580c 100%)" }}
               >
-                <Download size={18} />
+                {saving ? (
+                  <Loader2 size={18} className="animate-spin" />
+                ) : (
+                  <Download size={18} />
+                )}
                 Salvar imagem
-              </a>
+              </button>
             </div>
           </div>
         </div>
