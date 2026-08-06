@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Upload, X, ZoomIn, Download, Loader2, RotateCcw, Move } from "lucide-react";
 
 const MOCKUP_URL =
-  "https://ucezjskktvkhkmtqzdyc.supabase.co/storage/v1/object/public/Arquivos/Imagens/eu%20voto%20(1).png";
+  "https://ucezjskktvkhkmtqzdyc.supabase.co/storage/v1/object/public/Arquivos/Imagens/mockup%20foto%20feed.png";
 
 const OUTPUT_SIZE = 500;
 const CROP_RATIO = 0.72; // área de corte é 72% do canvas visível no editor
